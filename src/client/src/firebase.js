@@ -4,12 +4,12 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyCDoIZyqVQUe2xh4shEWTbDsh8d57PAzds",
+  authDomain: "test-dae4d.firebaseapp.com",
+  projectId: "test-dae4d",
+  storageBucket: "test-dae4d.appspot.com",
+  messagingSenderId: "790476273236",
+  appId: "1:790476273236:web:03e059e7106c6be2515fc1"
 };
 
 const app = initializeApp(firebaseConfig);

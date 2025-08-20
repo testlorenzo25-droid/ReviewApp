@@ -49,6 +49,27 @@
   text-align: center;             /* ogni stella centrata nella sua porzione */
 }
 
+.dashboard-edit-text {
+  margin-top: 8px;       /* distanza dal bottone */
+  font-size: 0.75rem;
+  color: #666;        /* blu stile link */
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+}
+
+.dashboard-edit-text:hover {
+  text-decoration: underline;
+}
+
+.dashboard-limit-message {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #666;
+  text-align: center;
+  width: 100%;
+}
+
 .dashboard-star.active {
   color: #fbbc05;
 }

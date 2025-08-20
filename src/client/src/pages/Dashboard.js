@@ -2,28 +2,55 @@
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
 import { auth, db } from "../firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 function Dashboard() {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [comment, setComment] = useState("");
-  const [submitted, setSubmitted] = useState(false); // 🔹 nuovo stato
+  const [submitted, setSubmitted] = useState(false);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [canSubmit, setCanSubmit] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Carica recensione utente
+  // Carica recensioni utente e controlla limite mensile
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const ref = doc(db, "reviews", user.uid);
-        const snap = await getDoc(ref);
-
-        if (snap.exists()) {
-          const data = snap.data();
-          setRating(data.rating || 0);
-          setComment(data.comment || "");
-          setSubmitted(true); // 🔹 blocca se già esiste
+        try {
+          // Conta le recensioni dell'utente per questo mese
+          const now = new Date();
+          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+          
+          const reviewsRef = collection(db, "reviews");
+          const q = query(
+            reviewsRef, 
+            where("userId", "==", user.uid),
+            where("createdAt", ">=", startOfMonth),
+            orderBy("createdAt", "desc")
+          );
+          
+          const querySnapshot = await getDocs(q);
+          const count = querySnapshot.size;
+          setReviewCount(count);
+          
+          // Controlla se l'utente ha già raggiunto il limite
+          if (count >= 3) {
+            setCanSubmit(false);
+            setSubmitted(true);
+          } else {
+            setCanSubmit(true);
+          }
+        } catch (err) {
+          console.error("Errore nel caricamento delle recensioni:", err);
+          setError("Impossibile caricare le recensioni. Controlla i permessi.");
+        } finally {
+          setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
     });
 
@@ -40,14 +67,17 @@ function Dashboard() {
     return "Vuoi lasciare due righe per aiutarci a migliorare?";
   };
 
-  const isDisabled = rating === 0 || (rating <= 3 && comment.trim() === "");
+  const isDisabled = rating === 0 || (rating <= 3 && comment.trim() === "") || !canSubmit;
 
   const handleSubmit = async () => {
     const user = auth.currentUser;
     if (!user || isDisabled) return;
 
     try {
-      await setDoc(doc(db, "reviews", user.uid), {
+      // Crea un ID unico per ogni recensione invece di usare user.uid
+      const reviewId = `${user.uid}_${Date.now()}`;
+      
+      await setDoc(doc(db, "reviews", reviewId), {
         rating,
         comment,
         userId: user.uid,
@@ -55,10 +85,19 @@ function Dashboard() {
         createdAt: new Date(),
       });
 
-      setSubmitted(true); // 🔹 blocca modifiche
+      // Aggiorna il conteggio e blocca ulteriori invii se raggiunto il limite
+      const newCount = reviewCount + 1;
+      setReviewCount(newCount);
+      
+      if (newCount >= 3) {
+        setCanSubmit(false);
+      }
+      
+      setSubmitted(true);
       alert("Grazie per il tuo feedback!");
     } catch (err) {
       console.error("Errore salvataggio recensione:", err);
+      setError("Impossibile inviare la recensione. Controlla i permessi.");
     }
   };
 
@@ -85,6 +124,13 @@ function Dashboard() {
           Unisciti a chi ha già condiviso la sua esperienza, la tua opinione conta molto!
         </p>
 
+        {/* Messaggio di errore */}
+        {error && (
+          <div className="dashboard-error">
+            {error}
+          </div>
+        )}
+
         {/* Stelle */}
         <div className="dashboard-stars">
           {[1, 2, 3, 4, 5].map((star) => (
@@ -92,10 +138,10 @@ function Dashboard() {
               key={star}
               type="button"
               className={`dashboard-star ${(hover || rating) >= star ? "active" : ""}`}
-              onClick={() => !submitted && setRating(star)} // 🔹 disabilita se già inviato
-              onMouseEnter={() => !submitted && setHover(star)}
-              onMouseLeave={() => !submitted && setHover(0)}
-              disabled={submitted} // 🔹 disabilita click
+              onClick={() => canSubmit && setRating(star)}
+              onMouseEnter={() => canSubmit && setHover(star)}
+              onMouseLeave={() => canSubmit && setHover(0)}
+              disabled={!canSubmit}
             >
               ★
             </button>
@@ -109,21 +155,27 @@ function Dashboard() {
           onChange={(e) => setComment(e.target.value)}
           placeholder={getPlaceholder()}
           aria-label="Inserisci il tuo commento"
-          disabled={submitted} // 🔹 disabilita se inviato
+          disabled={!canSubmit}
         />
 
-        {/* Bottone */}
+        {/* Bottone Invia */}
         <button
           className="dashboard-button"
           onClick={handleSubmit}
-          disabled={isDisabled || submitted} // 🔹 disabilitato dopo invio
+          disabled={isDisabled}
         >
-          {submitted ? "Feedback già inviato" : "Invia"}
+          {!canSubmit ? "Limite mensile raggiunto" : "Invia"}
         </button>
+
+        {/* Mostra il conteggio delle recensioni invece del link modifica */}
+        {reviewCount > 0 && (
+          <p className="dashboard-edit-text">
+            Hai inviato già <strong>{reviewCount}</strong> recensioni a quest'attività
+          </p>
+        )}
       </div>
     </div>
   );
 }
-
 
 export default Dashboard;
