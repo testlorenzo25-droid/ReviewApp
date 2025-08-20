@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const admin = require("../firebaseAdmin");
 
-// API di login: riceve idToken dal client e lo valida
 router.post("/login", async (req, res) => {
   const { idToken } = req.body;
   if (!idToken) return res.status(400).json({ error: "Token mancante" });

@@ -23,8 +23,23 @@
 .swipe-container {
   width: 100%;
   position: relative;
-  touch-action: pan-y; /* Migliora l'esperienza touch */
-  user-select: none; /* Previene la selezione del testo durante lo swipe */
+  touch-action: pan-y;
+  user-select: none;
+  overflow: hidden;
+}
+
+.slides {
+  display: flex;
+  will-change: transform;
+}
+
+.slide {
+  min-width: calc(100% - 20px); 
+  margin: 0 10px;              
+  max-height: 55vh;
+  border-radius: 24px;
+  object-fit: cover;
+  aspect-ratio: 8/9;
 }
 
 .indicators {
@@ -48,7 +63,7 @@
 
 .login-container {
   display: flex;
-  flex-direction: column; /* CORRETTO: era flexDirection (JS) invece di flex-direction (CSS) */
+  flex-direction: column;
   margin-top: 32px;
   width: 100%;
 }
@@ -56,10 +71,10 @@
 .google-login-btn {
   width: 100%;
   padding: 14px;
-  border-radius: 24px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: 500;
-  background: #EEEEEE;
+  background: #f1f1f1;
   color: #000000;
   border: none;
   cursor: pointer;
@@ -72,7 +87,7 @@
 }
 
 .google-login-btn:hover {
-  background: #E0E0E0;
+  background: #cecece;
 }
 
 .google-logo {
@@ -81,12 +96,12 @@
 }
 
 .legal-text {
-  margin-top: 16px; /* Aggiunta margin-top per distanziare dal bottone */
+  margin-top: 16px;
   margin-bottom: 10px;
   font-size: 12px;
   color: #828282;
   line-height: 1.4;
-  text-align: center; /* Assicura che il testo sia centrato */
+  text-align: center;
   width: 100%;
 }
 
@@ -99,13 +114,8 @@
   text-decoration: underline;
 }
 
-/* Aggiungi media query per migliorare l'esperienza mobile */
 @media (max-width: 480px) {
   .app-container {
     padding: 16px;
-  }
-  
-  .swipe-container {
-    overflow: hidden; /* Previene lo scroll orizzontale accidentale */
   }
 }
