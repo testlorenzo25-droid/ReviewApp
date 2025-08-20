@@ -1,0 +1,26 @@
+# Imposta fine riga standard (LF) per tutti i file di testo
+* text=auto eol=lf
+
+# Tratta i file JavaScript, JSON, CSS, HTML sempre come testo con LF
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+
+# Evita di convertire immagini e file binari
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+
+# Non toccare le chiavi o i certificati
+*.pem binary
+*.crt binary
+*.key binary
+*.pfx binary

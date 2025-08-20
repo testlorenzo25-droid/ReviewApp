@@ -3,12 +3,15 @@ node_modules/
 src/client/node_modules/
 src/server/node_modules/
 
+
 # Build / distribuzione
 dist/
 build/
 .out/
 .next/
 coverage/
+src/server/config/serviceAccountKey.json
+
 
 # Configurazioni locali
 .env
