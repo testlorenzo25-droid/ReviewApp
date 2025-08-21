@@ -29,15 +29,15 @@ function Login() {
         // Usa sessionStorage come fallback per Safari privato
         try {
           localStorage.setItem("authToken", token);
-          localStorage.setItem("redirectAfterLogin", "/dashboard");
+          localStorage.setItem("redirectAfterLogin", "/feedback");
         } catch (e) {
           console.warn("LocalStorage non disponibile, usando sessionStorage");
           sessionStorage.setItem("authToken", token);
-          sessionStorage.setItem("redirectAfterLogin", "/dashboard");
+          sessionStorage.setItem("redirectAfterLogin", "/feedback");
         }
         
         // Forza il reindirizzamento
-        window.location.href = "/dashboard";
+        window.location.href = "/feedback";
       } else {
         console.error("Login fallito:", data.error);
         setLoginError(true);
