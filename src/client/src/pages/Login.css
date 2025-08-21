@@ -1,0 +1,315 @@
+/* Blocca lo scroll globale */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* niente scroll */
+}
+
+/* Container principale */
+.app-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* centro verticale */
+  align-items: stretch;
+  /* testi restano a sinistra */
+
+  height: 100vh;
+  /* prende tutta l'altezza dello schermo */
+  box-sizing: border-box;
+  position: relative; /* Aggiunto per il posizionamento del box fisso */
+}
+
+/* --- Righe animate --- */
+.animated-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 50px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  will-change: transform;
+}
+
+.rectangle {
+  width: 200px;
+  height: 70px;
+  border-radius: 8px;
+  background-color: #eaeaea;
+  flex-shrink: 0;
+}
+
+/* Animazioni */
+@keyframes marquee-left {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.row-1 {
+  animation: marquee-left 50s linear infinite;
+}
+
+.row-2 {
+  animation: marquee-right 45s linear infinite;
+}
+
+/* centrale → destra */
+.row-3 {
+  animation: marquee-left 40s linear infinite;
+}
+
+/* --- Testi (lasciati a sinistra) --- */
+.login-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* testi allineati a sinistra */
+  text-align: left;
+  width: 100%;
+}
+
+.text-grey {
+  font-size: 32px;
+  color: #737373;
+  margin: 6px 0;
+}
+
+.text-dark {
+  font-size: 32px;
+  color: #131313;
+  margin: 6px 0 2px 0;
+}
+
+/* --- Bottone Google --- */
+.google-login-btn {
+  margin-top: 24px;
+  width: 100%;
+  padding: 24px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  background: #131313;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.2s ease;
+}
+
+.google-login-btn:hover {
+  background: #333333;
+}
+
+.google-logo {
+  width: 22px;
+  height: 22px;
+}
+
+/* --- Testo legale --- */
+.legal-text {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #828282;
+  line-height: 1.5;
+  text-align: center;
+  width: 100%;
+}
+
+.legal-link {
+  color: #000000;
+  text-decoration: none;
+}
+
+.legal-link:hover {
+  text-decoration: underline;
+}
+
+/* Box profilo allineato al container */
+.fixed-box {
+  position: absolute;
+  top: 47%;
+  right: 0;
+  transform: translateY(-50%) rotate(11deg);
+  width: 270px;
+  height: 80px;
+  border-radius: 45px;
+  background-color: rgba(14, 154, 205, 0.28);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #131313;
+  border: 2px solid rgba(14, 154, 205, 0.5);
+  padding: 0 15px;
+  gap: 12px;
+  backdrop-filter: blur(5px);
+}
+
+/* Immagine profilo tonda - modificata per il pallino */
+.profile-picture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: visible; /* Cambiato da hidden a visible per far vedere il pallino */
+  position: relative;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%; /* Aggiunto per mantenere la forma rotonda */
+}
+
+/* Puntino di stato online - modificato per posizionamento corretto */
+.status-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #4cd964;
+  border: 2px solid white;
+  z-index: 2;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.profile-name {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(14, 154, 205, 1);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.profile-comment {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(14, 154, 205, 1);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.profile-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(14, 154, 205, 0.7), rgba(14, 154, 205, 0.9));
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+  border-radius: 50%; /* Aggiunto per mantenere la forma rotonda */
+}
+
+/* Modifica per avvicinare i testi "Meet Reviù" e "Your voice..." */
+.text-dark {
+  font-size: 32px;
+  color: #131313;
+  margin: 6px 0 0 0; /* Ridotto il margine inferiore da 2px a 0 */
+}
+
+.text-grey {
+  font-size: 32px;
+  color: #737373;
+  margin: 2px 0; /* Ridotto il margine da 6px a 2px */
+}
+
+/* --- Mobile --- */
+@media (max-width: 480px) {
+  .app-container {
+    padding: 16px;
+  }
+
+  .text-grey,
+  .text-dark {
+    font-size: 28px;
+  }
+
+  .text-dark {
+    margin: 4px 0 0 0;
+  }
+
+  .text-grey {
+    margin: 2px 0;
+  }
+
+  .fixed-box {
+    right: 0;
+    transform: translateY(-50%) rotate(11deg) scale(0.9);
+    width: 240px;
+    padding: 0 12px;
+    height: 70px;
+  }
+  
+  .profile-picture {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .profile-name {
+    font-size: 13px;
+  }
+  
+  .profile-comment {
+    font-size: 14px;
+  }
+  
+  .profile-fallback {
+    font-size: 16px;
+  }
+}
+
+/* Per schermi più piccoli */
+@media (max-width: 380px) {
+  .fixed-box {
+    right: -100px;
+    transform: translateY(-50%) rotate(11deg) scale(0.8);
+  }
+}

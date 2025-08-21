@@ -1,21 +1,35 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./components/Login";
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import useAutoLogout from "./hooks/useAutoLogout";
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 function App() {
-  const isAuthenticated = !!localStorage.getItem("authToken");
-  const redirectPath = localStorage.getItem("redirectAfterLogin");
-
-  useAutoLogout(); // ora funziona perché App è dentro <BrowserRouter>
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (isAuthenticated && redirectPath) {
-      localStorage.removeItem("redirectAfterLogin");
-      window.location.replace(redirectPath);
-    }
-  }, [isAuthenticated, redirectPath]);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+        // Salva il token anche in localStorage come fallback
+        user.getIdToken().then(token => {
+          localStorage.setItem("authToken", token);
+        });
+      } else {
+        setIsAuthenticated(false);
+        localStorage.removeItem("authToken");
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return <div>Caricamento...</div>;
+  }
 
   return (
     <Routes>
@@ -27,7 +41,7 @@ function App() {
         path="/dashboard"
         element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
       />
-      <Route path="*" element={<Navigate to="/login" />} />
+      <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
     </Routes>
   );
 }
