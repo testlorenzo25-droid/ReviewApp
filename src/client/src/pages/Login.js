@@ -5,11 +5,14 @@ import "./Login.css";
 
 function Login() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginError, setLoginError] = useState(false);
 
   const handleLogin = async () => {
     if (isLoggingIn) return;
     
     setIsLoggingIn(true);
+    setLoginError(false);
+    
     try {
       const result = await signInWithPopup(auth, provider);
       const token = await result.user.getIdToken();
@@ -37,13 +40,20 @@ function Login() {
         window.location.href = "/dashboard";
       } else {
         console.error("Login fallito:", data.error);
-        alert("Errore durante il login. Riprova.");
+        setLoginError(true);
       }
     } catch (err) {
       console.error("Errore login:", err);
-      alert("Errore durante il login. Riprova.");
+      setLoginError(true);
     } finally {
       setIsLoggingIn(false);
+      
+      // Resetta l'errore dopo 3 secondi
+      if (loginError) {
+        setTimeout(() => {
+          setLoginError(false);
+        }, 3000);
+      }
     }
   };
 
@@ -79,13 +89,15 @@ function Login() {
           className="google-login-btn" 
           onClick={handleLogin}
           disabled={isLoggingIn}
+          style={loginError ? {backgroundColor: '#ffebee', color: '#c62828'} : {}}
         >
           <img
             src="https://www.svgrepo.com/show/303108/google-icon-logo.svg"
             alt="Google logo"
             className="google-logo"
-          />
-          {isLoggingIn ? "Accesso in corso..." : "Continua con Google"}
+            />
+          {isLoggingIn ? "Accesso in corso..." : 
+           loginError ? "Errore nel login. Riprova!" : "Continua con Google"}
         </button>
 
         <p className="legal-text">
@@ -114,8 +126,8 @@ function Login() {
           <div className="status-dot"></div>
         </div>
         <div className="profile-info">
-          <div className="profile-name">Hey you,</div>
-          <div className="profile-comment">You should leave a Review!</div>
+          <div className="profile-name">Hey tu,</div>
+          <div className="profile-comment">Dovresti lasciare una Recensione!</div>
         </div>
       </div>
     </div>

@@ -306,6 +306,15 @@ body {
   }
 }
 
+/* Stile per il bottone in stato di errore */
+.google-login-btn[style*="background-color: #ffebee"] {
+  transition: all 0.3s ease;
+}
+
+.google-login-btn[style*="background-color: #ffebee"]:hover {
+  background-color: #ffcdd2 !important;
+}
+
 /* Per schermi più piccoli */
 @media (max-width: 380px) {
   .fixed-box {
