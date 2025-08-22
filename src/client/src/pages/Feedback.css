@@ -10,7 +10,7 @@
   box-sizing: border-box;
   text-align: left;
   overflow: hidden;
-  position: relative; /* Aggiunto per il posizionamento dell'icona */
+  position: relative;
 }
 
 .feedback-greeting {
@@ -54,7 +54,7 @@
 
 .feedback-star {
   width: 50px;
-  height: 50px; 
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -127,7 +127,7 @@
   font-family: 'Inter', sans-serif;
   transition: background-color 0.2s ease;
   line-height: 1.4;
-  width: 50%; 
+  width: 50%;
   box-sizing: border-box;
 }
 
@@ -148,12 +148,12 @@
   font-family: 'Inter', sans-serif;
   transition: background-color 0.2s ease;
   line-height: 1.4;
-  width: 50%; 
+  width: 50%;
   box-sizing: border-box;
 }
 
 .feedback-button-submit:hover {
-  background-color: #333333;
+  background-color: #080808;
 }
 
 .feedback-button-submit:disabled {
@@ -162,21 +162,34 @@
   cursor: not-allowed;
 }
 
+.feedback-topbar {
+  width: 100%;
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
 .feedback-logout {
-  position: absolute;
-  top: 100px;
-  right: 20px;
-  font-size: 24px;
-  color: #19171A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #131313;
+  font-size: 25px;
   cursor: pointer;
-  z-index: 1000;
+  padding: 0;
 }
 
 .feedback-logout:hover {
-  color: #333;
+  background-color: transparent;
+  color: #333333;
 }
 
-/* Media query per schermi più grandi */
 @media (min-width: 768px) {
   .feedback-container {
     max-width: 600px;
@@ -187,23 +200,160 @@
   .feedback-container {
     padding: 16px;
   }
-  
+
   .feedback-greeting,
   .feedback-title {
     font-size: 30px;
   }
-  
+
   .feedback-stars {
-    gap: 24px; 
+    gap: 24px;
   }
-  
+
   .feedback-star {
     width: 40px;
     height: 40px;
   }
-  
+
   .feedback-logout {
     top: 50px;
     right: 16px;
+  }
+}
+
+@keyframes bounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.3); }
+  50% { transform: scale(0.9); }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.feedback-star.clicked {
+  animation: bounce 0.4s ease;
+}
+
+.feedback-button-submit:disabled {
+  background-color: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.feedback-button-submit:disabled:hover {
+  background-color: #e0e0e0;
+  transform: none;
+}
+
+/* Stili per le notifiche */
+.feedback-notification {
+  position: fixed;
+  bottom: 30px;
+  left: 20px;
+  right: 20px;
+  transform: none;
+  background-color: #131313;
+  color: #e0e0e0;
+  padding: 20px 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  max-width: calc(480px - 40px);
+  margin: 0 auto;
+  text-align: center;
+  font-weight: 500;
+  box-sizing: border-box;
+  min-height: 15%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.feedback-notification.visible {
+  opacity: 1;
+  transform: translateY(-10px);
+}
+
+.feedback-notification.success {
+  background-color: #131313;
+}
+
+.feedback-notification.error {
+  background-color: #d32f2f;
+}
+
+.feedback-notification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.feedback-notification-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.notification-content {
+  width: 100%;
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.notification-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.notification-button {
+  width: 100%;
+  padding: 14px 0;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.2s ease;
+}
+
+.notification-button.confirm {
+  background-color: #e0e0e0;
+  color: #131313;
+}
+
+.notification-button.confirm:hover {
+  background-color: #d0d0d0;
+}
+
+@media (min-width: 768px) {
+  .feedback-notification {
+    max-width: calc(600px - 40px);
+  }
+}
+
+@media (max-width: 480px) {
+  .feedback-notification {
+    bottom: 20px;
+    left: 16px;
+    right: 16px;
+    max-width: calc(100% - 32px);
+    padding: 20px 24px;
+    min-height: 25%;
   }
 }

@@ -165,7 +165,7 @@ body {
   transform: translateY(-50%) rotate(11deg);
   width: 270px;
   height: 80px;
-  border-radius: 45px;
+  border-radius: 8px;
   background-color: rgba(14, 154, 205, 0.28);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   z-index: 1000;
