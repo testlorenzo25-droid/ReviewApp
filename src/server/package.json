@@ -6,8 +6,11 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "apify-client": "^2.15.1",
+    "axios": "^1.11.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "dotenv": "^17.2.1",
     "express": "^4.21.2",
     "firebase-admin": "^13.4.0",
     "morgan": "^1.10.1"

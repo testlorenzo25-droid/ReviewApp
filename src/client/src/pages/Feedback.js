@@ -158,7 +158,7 @@ function Feedback() {
       </div>
 
       <h1 className="feedback-greeting">Ciao {userName}!</h1>
-      <h2 className="feedback-title">Come è stata la tua Esperienza da Pizzulo?</h2>
+      <h2 className="feedback-title">Come è stata la tua Esperienza da {process.env.REACT_APP_BUSINESS_NAME}?</h2>
       <p className="feedback-subtitle">
         Unisciti a chi ha già condiviso la sua esperienza, la tua opinione conta molto!
       </p>

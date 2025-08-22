@@ -26,7 +26,6 @@ function Login() {
       const data = await res.json();
 
       if (res.ok) {
-        // Usa sessionStorage come fallback per Safari privato
         try {
           localStorage.setItem("authToken", token);
           localStorage.setItem("redirectAfterLogin", "/feedback");
@@ -36,7 +35,6 @@ function Login() {
           sessionStorage.setItem("redirectAfterLogin", "/feedback");
         }
         
-        // Forza il reindirizzamento
         window.location.href = "/feedback";
       } else {
         console.error("Login fallito:", data.error);
