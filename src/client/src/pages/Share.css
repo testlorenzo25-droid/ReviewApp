@@ -2,7 +2,8 @@
 /* Blocca lo scroll globale */
 html,
 body {
-  height: 100%;
+  height: 100vh;   /* fallback */
+  height: 100dvh;  /* altezza dinamica su Safari iOS / moderni */
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -20,21 +21,46 @@ body {
   justify-content: center;
   align-items: center;
 
-  height: 100vh;
+  height: 100vh;   /* fallback */
+  height: 100dvh;  /* viewport dinamico */
   box-sizing: border-box;
   position: relative;
 }
 
-/* Topbar con pulsante logout */
+/* Topbar con moneta e pulsante logout */
 .share-topbar {
   width: 100%;
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 12px 0;
   box-sizing: border-box;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 35px;
+}
+
+/* Stile per il display delle monete */
+.coin-display {
+  display: flex;
+  align-items: center;
+  background-color: #EDEDED;
+  border-radius: 8px;
+  padding: 2px 20px;
+  height: 32px;
+  justify-content: center;
+  gap: 6px;
+}
+
+.coin-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coin-count {
+  font-size: 17px;
+  font-weight: 700;
+  color: #19171A;
 }
 
 .share-logout {
@@ -43,7 +69,7 @@ body {
   justify-content: center;
   background: transparent;
   border: none;
-  color: #131313;
+  color: #737373;
   font-size: 25px;
   cursor: pointer;
   padding: 0;
@@ -79,11 +105,12 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 16px !important; /* Aggiunto più padding */
+  padding: 16px !important;
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
 }
+
 .review-text {
   font-size: 15px;
   font-weight: 300;
@@ -93,6 +120,7 @@ body {
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 }
+
 .review-author {
   font-size: 16px;
   font-weight: bold;
@@ -110,30 +138,17 @@ body {
 
 /* Animazioni */
 @keyframes marquee-left {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 @keyframes marquee-right {
-  0% {
-    transform: translateX(-50%);
-  }
-  100% {
-    transform: translateX(0);
-  }
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
 }
 
-.row-1 {
-  animation: marquee-left 50s linear infinite;
-}
-
-.row-2 {
-  animation: marquee-right 45s linear infinite;
-}
+.row-1 { animation: marquee-left 50s linear infinite; }
+.row-2 { animation: marquee-right 45s linear infinite; }
 
 /* --- Bottone Google --- */
 .google-share-btn {
@@ -154,9 +169,7 @@ body {
   transition: background-color 0.2s ease;
 }
 
-.google-share-btn:hover {
-  background: #333333;
-}
+.google-share-btn:hover { background: #333333; }
 
 .google-logo {
   width: 22px;
@@ -172,31 +185,42 @@ body {
   text-decoration: underline;
 }
 
-.skip-text:hover {
-  color: #000000;
-}
+.skip-text:hover { color: #000000; }
 
 /* --- Mobile --- */
 @media (max-width: 480px) {
-  .share-container {
-    padding: 16px;
-  }
+  .share-container { padding: 16px; }
 
   .square {
     width: 150px;
     height: 150px;
   }
-  
+
   .google-share-btn {
     padding: 20px;
     font-size: 16px;
   }
 }
 
-/* Per schermi più piccoli */
+/* Schermi molto piccoli */
 @media (max-width: 380px) {
   .square {
     width: 130px;
     height: 130px;
+  }
+  
+  .coin-display {
+    height: 32px;
+    padding: 6px 10px;
+    min-width: 60px;
+  }
+  
+  .coin-icon img {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .coin-count {
+    font-size: 15px;
   }
 }

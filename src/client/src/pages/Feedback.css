@@ -1,18 +1,71 @@
+/* Feedback.css (versione corretta) */
 .feedback-container {
   max-width: 480px;
   margin: 0 auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  height: 100dvh;
   box-sizing: border-box;
   text-align: left;
   overflow: hidden;
   position: relative;
 }
 
+/* TOPBAR - Modificata per allineare correttamente gli elementi */
+.feedback-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px 0%;
+  box-sizing: border-box;
+  margin-bottom: 35px;
+}
+
+.coin-display {
+  display: flex;
+  align-items: center;
+  background-color: #EDEDED;
+  border-radius: 8px;
+  padding: 2px 20px;
+  height: 32px;
+  justify-content: center;
+  gap: 6px;
+}
+
+.coin-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coin-count {
+  font-size: 16px;
+  font-weight: 700; /* Testo in grassetto */
+  color: #19171A;
+}
+
+.feedback-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #737373;
+  font-size: 25px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.feedback-logout:hover {
+  background-color: transparent;
+  color: #333333;
+}
+
+/* Il resto del CSS rimane invariato */
 .feedback-greeting {
   font-size: 26px;
   font-weight: 600;
@@ -44,7 +97,8 @@
   text-align: left;
 }
 
-.feedback-stars {
+/* EMOJI FEEDBACK */
+.feedback-emojis {
   display: flex;
   justify-content: center;
   width: 100%;
@@ -52,35 +106,35 @@
   gap: 26px;
 }
 
-.feedback-star {
-  width: 50px;
-  height: 50px;
+.feedback-emoji {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  background-color: rgba(237, 237, 237, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #EDEDED;
-  background: none;
-  border: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
   padding: 0;
-  transition: all 0.2s ease-in-out;
-  transform: scale(1);
 }
 
-.feedback-star:hover {
-  transform: scale(1.1);
+.feedback-emoji:hover {
+  transform: scale(1.05);
 }
 
-.feedback-star.active {
-  color: #FDCC0D;
-  transform: scale(1.1);
+.feedback-emoji.active {
+  border-width: 3px;
 }
 
-.feedback-star svg {
-  width: 100%;
-  height: 100%;
+.feedback-emoji .emoji {
+  font-size: 42px;
+  line-height: 1;
+  transition: filter 0.2s ease;
 }
 
+/* COMMENT BOX */
 .feedback-comment-box {
   width: 100%;
   margin-bottom: 16px;
@@ -107,6 +161,7 @@
   line-height: 1.4;
 }
 
+/* BUTTONS */
 .feedback-buttons {
   display: flex;
   justify-content: space-between;
@@ -114,12 +169,12 @@
   gap: 16px;
 }
 
-.feedback-button-skip {
+.feedback-button-clean {
   padding: 14px 24px;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 500;
-  background: #f1f1f1;
+  background: #f1f1f100;
   color: #000000;
   border: 0px solid #ddd;
   cursor: pointer;
@@ -131,8 +186,8 @@
   box-sizing: border-box;
 }
 
-.feedback-button-skip:hover {
-  background-color: #e0e0e0;
+.feedback-button-clean:hover {
+  background-color: rgba(237, 237, 237, 0.7);
 }
 
 .feedback-button-submit {
@@ -160,83 +215,6 @@
   background-color: #e0e0e0;
   color: #aaa;
   cursor: not-allowed;
-}
-
-.feedback-topbar {
-  width: 100%;
-  border-radius: 8px;
-  padding: 12px 14px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-bottom: 35px;
-}
-
-.feedback-logout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  color: #131313;
-  font-size: 25px;
-  cursor: pointer;
-  padding: 0;
-}
-
-.feedback-logout:hover {
-  background-color: transparent;
-  color: #333333;
-}
-
-@media (min-width: 768px) {
-  .feedback-container {
-    max-width: 480px;
-  }
-}
-
-@media (max-width: 480px) {
-  .feedback-container {
-    padding: 16px;
-  }
-
-  .feedback-greeting,
-  .feedback-title {
-    font-size: 30px;
-  }
-
-  .feedback-stars {
-    gap: 24px;
-  }
-
-  .feedback-star {
-    width: 40px;
-    height: 40px;
-  }
-
-  .feedback-logout {
-    top: 50px;
-    right: 16px;
-  }
-}
-
-@keyframes bounce {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.3); }
-  50% { transform: scale(0.9); }
-  70% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-
-.feedback-star.clicked {
-  animation: bounce 0.4s ease;
-}
-
-.feedback-button-submit:disabled {
-  background-color: #e0e0e0;
-  color: #aaa;
-  cursor: not-allowed;
   transform: none;
 }
 
@@ -245,16 +223,15 @@
   transform: none;
 }
 
-/* Stili per le notifiche */
+/* NOTIFICHE */
 .feedback-notification {
   position: fixed;
   bottom: 30px;
   left: 20px;
   right: 20px;
-  transform: none;
-  background-color: #131313;
-  color: #e0e0e0;
-  padding: 20px 24px;
+  background-color: #FDFBFE;
+  color: #131313;
+  padding: 32px 32px;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
@@ -265,7 +242,7 @@
   text-align: center;
   font-weight: 500;
   box-sizing: border-box;
-  min-height: 15%;
+  min-height: 30%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -278,7 +255,7 @@
 }
 
 .feedback-notification.success {
-  background-color: #131313;
+  background-color: #FDFBFE;
 }
 
 .feedback-notification.error {
@@ -333,27 +310,67 @@
 }
 
 .notification-button.confirm {
-  background-color: #e0e0e0;
-  color: #131313;
+  background-color: #131313;
+  color: #e0e0e0;
 }
 
 .notification-button.confirm:hover {
   background-color: #d0d0d0;
 }
 
+/* RESPONSIVE */
 @media (min-width: 768px) {
+  .feedback-container {
+    max-width: 480px;
+  }
   .feedback-notification {
     max-width: calc(600px - 40px);
   }
 }
 
 @media (max-width: 480px) {
+  .feedback-container {
+    padding: 16px;
+  }
+
+  .feedback-greeting,
+  .feedback-title {
+    font-size: 30px;
+  }
+
+  .feedback-emojis {
+    gap: 20px;
+  }
+
+  .feedback-emoji {
+    width: 55px;
+    height: 55px;
+  }
+
+  .feedback-emoji .emoji {
+    font-size: 40px;
+  }
+
   .feedback-notification {
     bottom: 20px;
     left: 16px;
     right: 16px;
     max-width: calc(100% - 32px);
-    padding: 20px 24px;
-    min-height: 25%;
+    padding: 32px 32px;
+    min-height: 32%;
+  }
+  
+  .coin-display {
+    height: 32px;
+    padding: 2px 20px;
+  }
+  
+  .coin-icon img {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .coin-count {
+    font-size: 15px;
   }
 }

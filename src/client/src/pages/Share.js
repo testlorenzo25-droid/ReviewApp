@@ -1,20 +1,27 @@
 // Share.js
 import React, { useEffect, useState } from "react";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightFromBracket, faStar } from '@fortawesome/free-solid-svg-icons'; // Aggiunta faStar
+import { faArrowRightFromBracket, faStar } from '@fortawesome/free-solid-svg-icons';
 import "./Share.css";
 
 function Share() {
   const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userCoins, setUserCoins] = useState(0);
+  // Rimossa la dichiarazione di userId poiché non utilizzata
+  // const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
+        // Rimossa l'impostazione di userId poiché non utilizzata
+        // setUserId(currentUser.uid);
+        await loadUserData(currentUser.uid); // Carica i dati utente
         fetchReviews();
       } else {
         const hasToken = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
@@ -28,6 +35,19 @@ function Share() {
 
     return () => unsubscribe();
   }, [navigate]);
+
+  // Funzione per caricare i dati dell'utente
+  const loadUserData = async (uid) => {
+    try {
+      const userDoc = await getDoc(doc(db, "users", uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setUserCoins(userData.coins || 0);
+      }
+    } catch (error) {
+      console.error("Errore nel caricamento dati utente:", error);
+    }
+  };
 
   const fetchReviews = async () => {
     try {
@@ -108,8 +128,21 @@ function Share() {
 
   return (
     <div className="share-container">
-      {/* Pulsante di logout in alto a destra */}
+      {/* Topbar con moneta e logout */}
       <div className="share-topbar">
+        {/* Box Coin a SINISTRA */}
+        <div className="coin-display">
+          <div className="coin-icon">
+            <img 
+              src="https://cdn-icons-png.flaticon.com/512/5219/5219370.png" 
+              alt="Coin" 
+              style={{ width: '22px', height: '22px' }}
+            />
+          </div>
+          <span className="coin-count">{userCoins}</span>
+        </div>
+
+        {/* Logout a DESTRA */}
         <button type="button" className="share-logout" onClick={handleLogout}>
           <FontAwesomeIcon icon={faArrowRightFromBracket} />
         </button>

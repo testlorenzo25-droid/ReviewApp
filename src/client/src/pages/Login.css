@@ -1,11 +1,11 @@
 /* Blocca lo scroll globale */
 html,
 body {
-  height: 100%;
+  height: 100vh;   /* fallback */
+  height: 100dvh;  /* altezza dinamica corretta su Safari iOS / moderni */
   margin: 0;
   padding: 0;
-  overflow: hidden;
-  /* niente scroll */
+  overflow: hidden; /* niente scroll */
 }
 
 /* Container principale */
@@ -17,15 +17,13 @@ body {
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  /* centro verticale */
-  align-items: stretch;
-  /* testi restano a sinistra */
+  justify-content: center;   /* centro verticale */
+  align-items: stretch;      /* testi restano a sinistra */
 
-  height: 100vh;
-  /* prende tutta l'altezza dello schermo */
+  height: 100vh;   /* fallback */
+  height: 100dvh;  /* viewport dinamico */
   box-sizing: border-box;
-  position: relative; /* Aggiunto per il posizionamento del box fisso */
+  position: relative; /* per il box fisso */
 }
 
 /* --- Righe animate --- */
@@ -55,44 +53,24 @@ body {
 
 /* Animazioni */
 @keyframes marquee-left {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 @keyframes marquee-right {
-  0% {
-    transform: translateX(-50%);
-  }
-
-  100% {
-    transform: translateX(0);
-  }
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
 }
 
-.row-1 {
-  animation: marquee-left 50s linear infinite;
-}
+.row-1 { animation: marquee-left 50s linear infinite; }
+.row-2 { animation: marquee-right 45s linear infinite; }
+.row-3 { animation: marquee-left 40s linear infinite; }
 
-.row-2 {
-  animation: marquee-right 45s linear infinite;
-}
-
-/* centrale → destra */
-.row-3 {
-  animation: marquee-left 40s linear infinite;
-}
-
-/* --- Testi (lasciati a sinistra) --- */
+/* --- Testi --- */
 .login-section {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  /* testi allineati a sinistra */
   text-align: left;
   width: 100%;
 }
@@ -100,13 +78,13 @@ body {
 .text-grey {
   font-size: 32px;
   color: #737373;
-  margin: 6px 0;
+  margin: 2px 0;
 }
 
 .text-dark {
   font-size: 32px;
   color: #131313;
-  margin: 6px 0 2px 0;
+  margin: 6px 0 0 0;
 }
 
 /* --- Bottone Google --- */
@@ -129,9 +107,7 @@ body {
   transition: background-color 0.2s ease;
 }
 
-.google-login-btn:hover {
-  background: #333333;
-}
+.google-login-btn:hover { background: #333333; }
 
 .google-logo {
   width: 22px;
@@ -152,12 +128,9 @@ body {
   color: #000000;
   text-decoration: none;
 }
+.legal-link:hover { text-decoration: underline; }
 
-.legal-link:hover {
-  text-decoration: underline;
-}
-
-/* Box profilo allineato al container */
+/* Box profilo */
 .fixed-box {
   position: absolute;
   top: 47%;
@@ -179,7 +152,6 @@ body {
   backdrop-filter: blur(5px);
 }
 
-/* Immagine profilo tonda - modificata per il pallino */
 .profile-picture {
   width: 50px;
   height: 50px;
@@ -189,7 +161,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  overflow: visible; /* Cambiato da hidden a visible per far vedere il pallino */
+  overflow: visible;
   position: relative;
 }
 
@@ -197,10 +169,9 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50%; /* Aggiunto per mantenere la forma rotonda */
+  border-radius: 50%;
 }
 
-/* Puntino di stato online - modificato per posizionamento corretto */
 .status-dot {
   position: absolute;
   bottom: 0;
@@ -245,40 +216,16 @@ body {
   color: white;
   font-weight: 600;
   font-size: 18px;
-  border-radius: 50%; /* Aggiunto per mantenere la forma rotonda */
-}
-
-/* Modifica per avvicinare i testi "Meet Reviù" e "Your voice..." */
-.text-dark {
-  font-size: 32px;
-  color: #131313;
-  margin: 6px 0 0 0; /* Ridotto il margine inferiore da 2px a 0 */
-}
-
-.text-grey {
-  font-size: 32px;
-  color: #737373;
-  margin: 2px 0; /* Ridotto il margine da 6px a 2px */
+  border-radius: 50%;
 }
 
 /* --- Mobile --- */
 @media (max-width: 480px) {
-  .app-container {
-    padding: 16px;
-  }
+  .app-container { padding: 16px; }
 
-  .text-grey,
-  .text-dark {
-    font-size: 28px;
-  }
-
-  .text-dark {
-    margin: 4px 0 0 0;
-  }
-
-  .text-grey {
-    margin: 2px 0;
-  }
+  .text-grey, .text-dark { font-size: 28px; }
+  .text-dark { margin: 4px 0 0 0; }
+  .text-grey { margin: 2px 0; }
 
   .fixed-box {
     right: 0;
@@ -287,35 +234,22 @@ body {
     padding: 0 12px;
     height: 70px;
   }
-  
-  .profile-picture {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .profile-name {
-    font-size: 13px;
-  }
-  
-  .profile-comment {
-    font-size: 14px;
-  }
-  
-  .profile-fallback {
-    font-size: 16px;
-  }
+
+  .profile-picture { width: 50px; height: 50px; }
+  .profile-name { font-size: 13px; }
+  .profile-comment { font-size: 14px; }
+  .profile-fallback { font-size: 16px; }
 }
 
-/* Stile per il bottone in stato di errore */
+/* Stile bottone errore */
 .google-login-btn[style*="background-color: #ffebee"] {
   transition: all 0.3s ease;
 }
-
 .google-login-btn[style*="background-color: #ffebee"]:hover {
   background-color: #ffcdd2 !important;
 }
 
-/* Per schermi più piccoli */
+/* Schermi piccoli */
 @media (max-width: 380px) {
   .fixed-box {
     right: -100px;
