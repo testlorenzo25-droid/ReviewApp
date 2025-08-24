@@ -1,12 +1,12 @@
 /* Share.css */
-/* Blocca lo scroll globale */
 html,
 body {
-  height: 100vh;   /* fallback */
-  height: 100dvh;  /* altezza dinamica su Safari iOS / moderni */
+  height: 100vh;   
+  height: 100dvh;  
   margin: 0;
   padding: 0;
   overflow: hidden;
+  background-color: #FDFBFE;
 }
 
 /* Container principale */
@@ -27,7 +27,7 @@ body {
   position: relative;
 }
 
-/* Topbar con moneta e pulsante logout */
+/* Topbar con moneta e dropdown profilo */
 .share-topbar {
   width: 100%;
   border-radius: 8px;
@@ -43,7 +43,7 @@ body {
 .coin-display {
   display: flex;
   align-items: center;
-  background-color: #EDEDED;
+  background-color: #f5f5f5;
   border-radius: 8px;
   padding: 2px 20px;
   height: 32px;
@@ -63,20 +63,107 @@ body {
   color: #19171A;
 }
 
-.share-logout {
+/* Stili per il dropdown del profilo (aggiunti) */
+.profile-dropdown-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profile-picture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #FDFBFE;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: none;
-  color: #737373;
-  font-size: 25px;
+  flex-shrink: 0;
+  overflow: visible;
+  position: relative;
   cursor: pointer;
-  padding: 0;
 }
 
-.share-logout:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.profile-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #D1D1D1;
+  color: #737373;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.status-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background-color: #4caf50; /* verde online */
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+
+/* Dropdown senza ombra, con bordi e colori specifici */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  margin: 0; 
+  background-color: #FDFBFE;
+  border: 1px solid #EDEDED;
+  border-radius: 12px;
+  box-shadow: none;
+  min-width: 240px;
+  max-width: calc(100vw - 40px);
+  z-index: 1000;
+  overflow: hidden;
+  padding: 12px 0;
+}
+
+.dropdown-item {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #737373;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #F5F5F5;
+  color: #737373;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: #EDEDED;
+  margin: 8px 0;
+}
+
+/* Icone con colore #737373 */
+.dropdown-item .svg-inline--fa {
+  width: 20px;
+  height: 20px;
+  color: #737373;
 }
 
 /* --- Quadrati animati --- */
@@ -104,36 +191,56 @@ body {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 16px !important;
   box-sizing: border-box;
   overflow: hidden;
   position: relative;
 }
 
+/* Container per immagine profilo e nome */
+.review-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Immagine profilo tonda e blurrata */
+.profile-image-mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: blur(1.5px);
+  margin-right: 8px;
+}
+
+/* Nome autore */
+.review-author {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 0;
+}
+
+/* Icona virgolette */
+.quote-icon {
+  width: 16px;
+  height: 16px;
+  margin-bottom: 6px;
+  fill: #EB4335; /* rosso */
+}
+
+/* Testo della recensione */
 .review-text {
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 300;
   line-height: 1.4;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
-}
-
-.review-author {
-  font-size: 16px;
-  font-weight: bold;
   margin-bottom: 8px;
-}
-
-.review-rating {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #666;
-  margin-top: 8px;
+  flex-grow: 1;
 }
 
 /* Animazioni */
@@ -158,7 +265,7 @@ body {
   font-size: 18px;
   font-weight: 600;
   background: #131313;
-  color: #ffffff;
+  color: #FDFBFE;
   border: none;
   cursor: pointer;
   display: flex;
@@ -196,9 +303,39 @@ body {
     height: 150px;
   }
 
+  .profile-image-mini {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .review-author {
+    font-size: 13px;
+  }
+  
+  .review-text {
+    font-size: 11px;
+  }
+
   .google-share-btn {
     padding: 20px;
     font-size: 16px;
+  }
+
+  /* Responsive per il dropdown */
+  .profile-picture {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .dropdown-menu {
+    min-width: 240px;
+    right: 0;
+    max-width: calc(100vw - 32px);
+  }
+  
+  .dropdown-item {
+    padding: 10px 16px;
+    font-size: 15px;
   }
 }
 
@@ -207,6 +344,11 @@ body {
   .square {
     width: 130px;
     height: 130px;
+  }
+  
+  .profile-image-mini {
+    width: 24px;
+    height: 24px;
   }
   
   .coin-display {

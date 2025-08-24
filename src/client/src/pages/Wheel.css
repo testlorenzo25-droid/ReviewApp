@@ -1,0 +1,430 @@
+/* Wheel.css */
+html,
+body {
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #FDFBFE;
+}
+
+.wheel-container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+  box-sizing: border-box;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* TOPBAR - Stile coerente con le altre pagine */
+.wheel-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px 0%;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
+.coin-display {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 2px 20px;
+  height: 32px;
+  justify-content: center;
+  gap: 6px;
+}
+
+.coin-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coin-count {
+  font-size: 16px;
+  font-weight: 700;
+  color: #19171A;
+}
+
+/* Stili per il dropdown del profilo (aggiunti) */
+.profile-dropdown-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profile-picture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #FDFBFE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: visible;
+  position: relative;
+  cursor: pointer;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.profile-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #D1D1D1;
+  color: #737373;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.status-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background-color: #4caf50; /* verde online */
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+
+/* Dropdown senza ombra, con bordi e colori specifici */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  margin: 0; 
+  background-color: #FDFBFE;
+  border: 1px solid #EDEDED;
+  border-radius: 12px;
+  box-shadow: none;
+  min-width: 240px;
+  max-width: calc(100vw - 40px);
+  z-index: 1000;
+  overflow: hidden;
+  padding: 12px 0;
+}
+
+.dropdown-item {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #737373;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #F5F5F5;
+  color: #737373;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: #EDEDED;
+  margin: 8px 0;
+}
+
+/* Icone con colore #737373 */
+.dropdown-item .svg-inline--fa {
+  width: 20px;
+  height: 20px;
+  color: #737373;
+}
+
+/* Titoli */
+.wheel-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: #19171A;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  width: 100%;
+  text-align: center;
+}
+
+.wheel-subtitle {
+  font-size: 1rem;
+  color: #737373;
+  margin-top: 0;
+  margin-bottom: 32px;
+  line-height: 1.4;
+  width: 100%;
+  text-align: center;
+}
+
+/* Contenitore della ruota */
+.wheel-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto 40px;
+}
+
+.wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  transition: transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  transform: rotate(0deg);
+}
+
+.wheel-section {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  transform-origin: bottom right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.wheel-section-content {
+  position: absolute;
+  left: 0;
+  width: 150px;
+  height: 30px;
+  text-align: center;
+  transform-origin: bottom left;
+  transform: rotate(45deg) translateX(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.wheel-pointer {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 40px;
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Pulsante di spin */
+.spin-button {
+  padding: 16px 40px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  background: #131313;
+  color: #FDFBFE;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+}
+
+.spin-button:hover {
+  background: #080808;
+  transform: translateY(-2px);
+}
+
+.spin-button:disabled {
+  background-color: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Risultato */
+.wheel-result {
+  font-size: 18px;
+  font-weight: 600;
+  color: #19171A;
+  margin-top: 20px;
+  min-height: 27px;
+}
+
+/* Notifiche (stile coerente con Feedback) */
+.wheel-notification {
+  position: fixed;
+  bottom: 30px;
+  left: 20px;
+  right: 20px;
+  background-color: #FDFBFE;
+  color: #131313;
+  padding: 32px 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  max-width: calc(480px - 40px);
+  margin: 0 auto;
+  text-align: center;
+  font-weight: 500;
+  box-sizing: border-box;
+  min-height: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.wheel-notification.visible {
+  opacity: 1;
+  transform: translateY(-10px);
+}
+
+.wheel-notification.success {
+  background-color: #FDFBFE;
+}
+
+.wheel-notification-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.wheel-notification-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.notification-content {
+  width: 100%;
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.notification-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.notification-button {
+  width: 100%;
+  padding: 14px 0;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.2s ease;
+}
+
+.notification-button.confirm {
+  background-color: #131313;
+  color: #e0e0e0;
+}
+
+.notification-button.confirm:hover {
+  background-color: #d0d0d0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+  .wheel-container {
+    padding: 16px;
+  }
+
+  .wheel-wrapper {
+    width: 280px;
+    height: 280px;
+    margin-bottom: 30px;
+  }
+
+  .wheel-title {
+    font-size: 24px;
+  }
+
+  .spin-button {
+    padding: 14px 32px;
+    font-size: 16px;
+  }
+  
+  .coin-display {
+    height: 32px;
+    padding: 2px 20px;
+  }
+  
+  .coin-icon img {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .coin-count {
+    font-size: 15px;
+  }
+  
+  .wheel-notification {
+    bottom: 20px;
+    left: 16px;
+    right: 16px;
+    max-width: calc(100% - 32px);
+    padding: 24px;
+    min-height: 32%;
+  }
+
+  /* Responsive per il dropdown */
+  .profile-picture {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .dropdown-menu {
+    min-width: 240px;
+    right: 0;
+    max-width: calc(100vw - 32px);
+  }
+  
+  .dropdown-item {
+    padding: 10px 16px;
+    font-size: 15px;
+  }
+}

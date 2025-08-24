@@ -1,5 +1,5 @@
-// Feedback.js (versione corretta)
-import React, { useState, useEffect, useCallback } from "react";
+// Feedback.js (versione corretta per produzione)
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import {
@@ -17,7 +17,13 @@ import {
   limit
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowRightFromBracket,
+  faFileLines,
+  faCircleQuestion,
+  faComment
+} from '@fortawesome/free-solid-svg-icons';
+import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Feedback.css';
 
@@ -37,6 +43,9 @@ function Feedback() {
     message: '',
     withButton: false
   });
+  const [userPhoto, setUserPhoto] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -46,11 +55,8 @@ function Feedback() {
         const nameFromEmail = user.email.split('@')[0];
         setUserName(nameFromEmail);
         setUserId(user.uid);
-
-        // Carica i dati dell'utente
+        setUserPhoto(user.photoURL || "");
         await loadUserData(user.uid);
-
-        // Controlla gli ultimi feedback
         await checkLastFeedback(user.uid);
       } else {
         const hasToken = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
@@ -63,30 +69,42 @@ function Feedback() {
     return () => unsubscribe();
   }, [navigate]);
 
-  // Funzione canSubmitFeedback con useCallback
+  // Aggiungi useEffect per gestire il click outside del dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleCoinClick = () => {
+    navigate('/wheel');
+  };
+
   const canSubmitFeedback = useCallback(() => {
-    // Se ha già inviato 3 feedback questo mese, non può inviarne altri
     if (feedbackCountThisMonth >= 3) {
       return false;
     }
 
-    // Se ha già inviato un feedback, controlla che sia passata almeno una settimana
     if (lastFeedbackDate) {
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       return lastFeedbackDate <= oneWeekAgo;
     }
 
-    // Se non ha mai inviato feedback, può inviarlo
     return true;
   }, [feedbackCountThisMonth, lastFeedbackDate]);
 
-  // Effetto per il countdown
   useEffect(() => {
     let interval;
 
     if (lastFeedbackDate && !canSubmitFeedback()) {
-      // Calcola il tempo rimanente
       const calculateTimeRemaining = () => {
         const now = new Date();
         const lastDate = new Date(lastFeedbackDate);
@@ -105,7 +123,6 @@ function Feedback() {
         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-        // Assicurati che tutti i valori siano numeri validi
         setTimeRemaining({
           days: days || 0,
           hours: hours || 0,
@@ -114,19 +131,15 @@ function Feedback() {
         });
       };
 
-      // Calcola immediatamente
       calculateTimeRemaining();
-
-      // Aggiorna ogni secondo
       interval = setInterval(calculateTimeRemaining, 1000);
     } else {
       setTimeRemaining(null);
     }
 
     return () => clearInterval(interval);
-  }, [lastFeedbackDate, feedbackCountThisMonth, canSubmitFeedback]);
+  }, [lastFeedbackDate, canSubmitFeedback]);
 
-  // Carica i dati dell'utente dal database
   const loadUserData = async (uid) => {
     try {
       const userDoc = await getDoc(doc(db, "users", uid));
@@ -134,14 +147,14 @@ function Feedback() {
         const userData = userDoc.data();
         setUserCoins(userData.coins || 0);
       } else {
-        // Crea un nuovo utente se non esiste
         await setDoc(doc(db, "users", uid), {
           userName: auth.currentUser.email.split('@')[0],
           coins: 0,
           createdAt: serverTimestamp(),
           lastFeedbackDate: null,
           feedbackCountThisMonth: 0,
-          lastResetMonth: new Date().getMonth() // Mese corrente
+          lastResetMonth: new Date().getMonth(),
+          lastResetYear: new Date().getFullYear()
         });
         setUserCoins(0);
       }
@@ -150,22 +163,21 @@ function Feedback() {
     }
   };
 
-  // Controlla l'ultimo feedback e resetta il conteggio se necessario
   const checkLastFeedback = async (uid) => {
     try {
       const now = new Date();
-
-      // Controlla se è necessario resettare il conteggio mensile
       const userDoc = await getDoc(doc(db, "users", uid));
+
       if (userDoc.exists()) {
         const userData = userDoc.data();
         const lastResetMonth = userData.lastResetMonth;
+        const lastResetYear = userData.lastResetYear || now.getFullYear();
 
-        if (lastResetMonth !== now.getMonth()) {
-          // Reset del conteggio mensile
+        if (lastResetMonth !== now.getMonth() || lastResetYear !== now.getFullYear()) {
           await updateDoc(doc(db, "users", uid), {
             feedbackCountThisMonth: 0,
-            lastResetMonth: now.getMonth()
+            lastResetMonth: now.getMonth(),
+            lastResetYear: now.getFullYear()
           });
           setFeedbackCountThisMonth(0);
         } else {
@@ -175,7 +187,6 @@ function Feedback() {
         setLastFeedbackDate(userData.lastFeedbackDate ? userData.lastFeedbackDate.toDate() : null);
       }
 
-      // Controlla gli ultimi feedback dell'utente
       const feedbacksQuery = query(
         collection(db, "feedbacks"),
         where("userId", "==", uid),
@@ -194,11 +205,11 @@ function Feedback() {
   };
 
   const emojis = [
-    { icon: "😡", color: "#e53935" },  // Arrabbiata
-    { icon: "😢", color: "#1e88e5" },  // Triste
-    { icon: "😐", color: "#757575" },  // Neutra
-    { icon: "😊", color: "#43a047" },  // Sorridente
-    { icon: "😍", color: "#e91e63" }   // Occhi a cuoricino
+    { icon: "😡", color: "#e53935", label: "Molto insoddisfatto" },
+    { icon: "😢", color: "#1e88e5", label: "Insoddisfatto" },
+    { icon: "😐", color: "#757575", label: "Neutro" },
+    { icon: "😊", color: "#43a047", label: "Soddisfatto" },
+    { icon: "😍", color: "#e91e63", label: "Molto soddisfatto" }
   ];
 
   const isSubmitDisabled = () => {
@@ -229,8 +240,6 @@ function Feedback() {
     if (!timeRemaining) return "";
 
     const { days, hours, minutes, seconds } = timeRemaining;
-
-    // Formatta i secondi per assicurarsi che siano sempre a 2 cifre
     const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
 
     if (days > 0) {
@@ -266,8 +275,8 @@ function Feedback() {
   const handleSubmit = async () => {
     if (isSubmitDisabled()) return;
     setIsSubmitting(true);
+
     try {
-      // Aggiungi il feedback
       await addDoc(collection(db, "feedbacks"), {
         userId,
         userName,
@@ -276,7 +285,6 @@ function Feedback() {
         createdAt: serverTimestamp()
       });
 
-      // Aggiorna i dati dell'utente
       const now = new Date();
       const newCoins = userCoins + 1;
       const newFeedbackCount = feedbackCountThisMonth + 1;
@@ -291,7 +299,7 @@ function Feedback() {
       setFeedbackCountThisMonth(newFeedbackCount);
       setLastFeedbackDate(now);
 
-      showNotification('success', `Grazie per il tuo Feedback! Hai ottenuto 1 coin. Totale: ${newCoins} coin`, true);
+      showNotification('success', `Grazie per il tuo Feedback!`, true);
 
       setRating(0);
       setComment("");
@@ -323,22 +331,39 @@ function Feedback() {
 
   return (
     <div className="feedback-container">
-      {/* Overlay per la notifica */}
       <div className={`feedback-notification-overlay ${notification.visible ? 'visible' : ''}`}></div>
 
-      {/* Notifica in basso */}
       {notification.visible && (
         <div className={`feedback-notification ${notification.type} visible`}>
-          <div className="notification-content">{notification.message}</div>
-          <div style={{ marginTop: '10px', fontSize: '16px', color: '#737373' }}>
-            Coin totali: {userCoins}
-          </div>
+          {/* Aggiungi il pulsante di chiusura */}
+          <button
+            className="notification-close"
+            onClick={hideNotification}
+            aria-label="Chiudi notifica"
+          >
+            &times;
+          </button>
 
+          <div className="notification-content">
+            <div>Grazie per il tuo Feedback!</div>
+            {/* Aggiunta icona coin +1 sotto il testo */}
+            <div className="coin-earned-notification">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/5219/5219370.png"
+                alt="Coin"
+                className="notification-coin-icon"
+              />
+              <span className="coin-plus">+1</span>
+            </div>
+          </div>
           {notification.withButton && (
             <div className="notification-buttons">
               <button
                 className="notification-button confirm"
-                onClick={() => hideNotification()}
+                onClick={() => {
+                  hideNotification();
+                  navigate('/wheel');
+                }}
               >
                 Gira la ruota!
               </button>
@@ -348,22 +373,79 @@ function Feedback() {
       )}
 
       <div className="feedback-topbar">
-        {/* Box Coin a SINISTRA */}
-        <div className="coin-display">
+        <div
+          className="coin-display"
+          onClick={handleCoinClick}
+          style={{ cursor: 'pointer' }}
+        >
           <div className="coin-icon">
-            <img 
-              src="https://cdn-icons-png.flaticon.com/512/5219/5219370.png" 
-              alt="Coin" 
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/5219/5219370.png"
+              alt="Coin"
               style={{ width: '22px', height: '22px' }}
             />
           </div>
           <span className="coin-count">{userCoins}</span>
         </div>
 
-        {/* Logout a DESTRA */}
-        <button type="button" className="feedback-logout" onClick={handleLogout}>
-          <FontAwesomeIcon icon={faArrowRightFromBracket} />
-        </button>
+        <div className="profile-dropdown-container" ref={dropdownRef}>
+          <div
+            className="profile-picture"
+            onClick={() => setShowDropdown(!showDropdown)}
+            aria-label="Menu profilo"
+          >
+            {userPhoto ? (
+              <img src={userPhoto} alt="Profilo" className="profile-image-login" />
+            ) : (
+              <div className="profile-fallback">
+                {userName ? userName.charAt(0).toUpperCase() : "U"}
+              </div>
+            )}
+            <div className="status-dot"></div>
+          </div>
+
+          {showDropdown && (
+            <div className="dropdown-menu">
+              <button
+                className="dropdown-item"
+                onClick={() => navigate("/feedback")}
+              >
+                <FontAwesomeIcon icon={faComment} />
+                <span>Feedback</span>
+              </button>
+
+              <button
+                className="dropdown-item"
+                onClick={() => navigate("/share")}
+              >
+                <FontAwesomeIcon icon={faGoogle} />
+                <span>Google Review</span>
+              </button>
+
+              <div className="dropdown-divider"></div>
+
+              <button className="dropdown-item">
+                <FontAwesomeIcon icon={faFileLines} />
+                <span>Guide</span>
+              </button>
+
+              <button className="dropdown-item">
+                <FontAwesomeIcon icon={faCircleQuestion} />
+                <span>Help Center</span>
+              </button>
+
+              <div className="dropdown-divider"></div>
+
+              <button
+                className="dropdown-item"
+                onClick={handleLogout}
+              >
+                <FontAwesomeIcon icon={faArrowRightFromBracket} />
+                <span>Logout</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <h1 className="feedback-greeting">Ciao {userName}!</h1>
@@ -387,6 +469,7 @@ function Feedback() {
             }}
             onClick={() => canSubmitFeedback() && setRating(index + 1)}
             disabled={!canSubmitFeedback()}
+            aria-label={`Valutazione ${index + 1} stelle: ${emoji.label}`}
           >
             <span
               className="emoji"
@@ -407,6 +490,8 @@ function Feedback() {
           onChange={(e) => setComment(e.target.value)}
           placeholder={getPlaceholder()}
           disabled={!canSubmitFeedback()}
+          aria-label="Commento feedback"
+          rows={4}
         />
       </div>
 
@@ -415,6 +500,7 @@ function Feedback() {
           className="feedback-button-clean"
           onClick={handleSkip}
           disabled={!canSubmitFeedback()}
+          aria-label="Cancella feedback"
         >
           Cancella
         </button>
@@ -423,6 +509,7 @@ function Feedback() {
           onClick={handleSubmit}
           disabled={isSubmitDisabled() || isSubmitting || !canSubmitFeedback()}
           style={!canSubmitFeedback() ? { fontSize: '14px' } : {}}
+          aria-label={getButtonText()}
         >
           {getButtonText()}
         </button>

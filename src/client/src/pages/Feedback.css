@@ -1,4 +1,14 @@
-/* Feedback.css (versione corretta) */
+/* Feedback.css (versione completa e corretta) */
+html,
+body {
+  height: 100vh;   /* fallback */
+  height: 100dvh;  /* altezza dinamica corretta su Safari iOS / moderni */
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* niente scroll */
+  background-color: #FDFBFE;
+}
+
 .feedback-container {
   max-width: 480px;
   margin: 0 auto;
@@ -28,7 +38,7 @@
 .coin-display {
   display: flex;
   align-items: center;
-  background-color: #EDEDED;
+  background-color: #f5f5f5;
   border-radius: 8px;
   padding: 2px 20px;
   height: 32px;
@@ -48,21 +58,105 @@
   color: #19171A;
 }
 
-.feedback-logout {
+/* Stili per il dropdown del profilo */
+.profile-dropdown-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.profile-picture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #FDFBFE;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: none;
-  color: #737373;
-  font-size: 25px;
-  cursor: pointer;
-  padding: 0;
+  flex-shrink: 0;
+  overflow: visible;
+  position: relative;
+}
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
-.feedback-logout:hover {
-  background-color: transparent;
-  color: #333333;
+.profile-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #D1D1D1;
+  color: #737373;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.status-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background-color: #4caf50; /* verde online */
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+
+/* Dropdown senza ombra, con bordi e colori specifici */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  margin: 0; 
+  background-color: #FDFBFE; /* Cambiato da #FFFFFF */
+  border: 1px solid #EDEDED; /* Aggiunto bordo */
+  border-radius: 12px;
+  box-shadow: none; /* Rimosso box-shadow */
+  min-width: 240px;
+  max-width: calc(100vw - 40px);
+  z-index: 1000;
+  overflow: hidden;
+  padding: 12px 0;
+}
+
+.dropdown-item {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  color: #737373; /* Testo colore #737373 */
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #F5F5F5;
+  color: #737373; /* Mantiene lo stesso colore anche al hover */
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: #EDEDED; /* Colore del divisore */
+  margin: 8px 0;
+}
+
+/* Icone con colore #737373 */
+.dropdown-item .svg-inline--fa {
+  width: 20px;
+  height: 20px;
+  color: #737373; /* Colore delle icone */
 }
 
 /* Il resto del CSS rimane invariato */
@@ -196,7 +290,7 @@
   font-size: 16px;
   font-weight: 500;
   background: #131313;
-  color: #ffffff;
+  color: #FDFBFE;
   border: none;
   cursor: pointer;
   flex: 1;
@@ -318,16 +412,82 @@
   background-color: #d0d0d0;
 }
 
-/* RESPONSIVE */
-@media (min-width: 768px) {
-  .feedback-container {
-    max-width: 480px;
+.coin-earned-notification {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.notification-coin-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.coin-plus {
+  font-size: 20px;
+  font-weight: bold;
+  color: #19171A;
+}
+
+/* Modifica al contenuto della notifica per allineamento */
+.notification-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* Animazione di entrata dal basso */
+@keyframes slideInFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
   }
-  .feedback-notification {
-    max-width: calc(600px - 40px);
+  100% {
+    opacity: 1;
+    transform: translateY(-10px);
   }
 }
 
+.feedback-notification.visible {
+  opacity: 1;
+  transform: translateY(-10px);
+  animation: slideInFromBottom 0.5s ease forwards;
+}
+
+/* Stile per il pulsante di chiusura */
+.notification-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 36px; /* Modificato da 24px a 36px */
+  cursor: pointer;
+  color: #737373;
+  width: 40px; /* Aumentato per accomodare la X più grande */
+  height: 40px; /* Aumentato per accomodare la X più grande */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  line-height: 1; /* Assicura che la X sia centrata verticalmente */
+  padding: 0; /* Rimuove eventuali padding predefiniti */
+}
+
+.notification-close:hover {
+  background-color: #f5f5f5;
+}
+
+/* Responsive per dispositivi mobili */
 @media (max-width: 480px) {
   .feedback-container {
     padding: 16px;
@@ -372,5 +532,53 @@
   
   .coin-count {
     font-size: 15px;
+  }
+
+  .coin-earned-notification {
+    margin-top: 10px;
+  }
+  
+  .notification-coin-icon {
+    width: 22px;
+    height: 22px;
+  }
+  
+  .coin-plus {
+    font-size: 18px;
+  }
+
+  /* Responsive per il dropdown */
+  .profile-picture {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .dropdown-menu {
+    min-width: 240px;
+    right: 0;
+    max-width: calc(100vw - 32px);
+  }
+  
+  .dropdown-item {
+    padding: 10px 16px;
+    font-size: 15px;
+  }
+
+  /* Pulsante di chiusura su mobile */
+  .notification-close {
+    top: 12px;
+    right: 12px;
+    font-size: 32px; /* Leggermente più piccolo su mobile */
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (min-width: 768px) {
+  .feedback-container {
+    max-width: 480px;
+  }
+  .feedback-notification {
+    max-width: calc(600px - 40px);
   }
 }
