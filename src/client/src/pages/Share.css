@@ -1,8 +1,8 @@
 /* Share.css */
 html,
 body {
-  height: 100vh;   
-  height: 100dvh;  
+  height: 100vh;
+  height: 100dvh;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -15,14 +15,12 @@ body {
   max-width: 480px;
   margin: 0 auto;
   padding: 20px;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  height: 100vh;   /* fallback */
-  height: 100dvh;  /* viewport dinamico */
+  height: 100vh;
+  height: 100dvh;
   box-sizing: border-box;
   position: relative;
 }
@@ -37,6 +35,8 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 35px;
+  position: relative;
+  z-index: 1000;
 }
 
 /* Stile per il display delle monete */
@@ -49,6 +49,7 @@ body {
   height: 32px;
   justify-content: center;
   gap: 6px;
+  z-index: 1001;
 }
 
 .coin-icon {
@@ -63,11 +64,12 @@ body {
   color: #19171A;
 }
 
-/* Stili per il dropdown del profilo (aggiunti) */
+/* Stili per il dropdown del profilo */
 .profile-dropdown-container {
   position: relative;
   display: flex;
   align-items: center;
+  z-index: 1001;
 }
 
 .profile-picture {
@@ -110,26 +112,39 @@ body {
   right: 2px;
   width: 12px;
   height: 12px;
-  background-color: #4caf50; /* verde online */
+  background-color: #4caf50;
   border: 2px solid #fff;
   border-radius: 50%;
 }
 
-/* Dropdown senza ombra, con bordi e colori specifici */
 .dropdown-menu {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  margin: 0; 
+  margin: 0;
   background-color: #FDFBFE;
   border: 1px solid #EDEDED;
   border-radius: 12px;
-  box-shadow: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   min-width: 240px;
   max-width: calc(100vw - 40px);
-  z-index: 1000;
+  z-index: 1002;
   overflow: hidden;
   padding: 12px 0;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transform-origin: top right;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+  pointer-events: auto;
+  animation: fadeInScale 0.3s ease forwards;
 }
 
 .dropdown-item {
@@ -174,6 +189,12 @@ body {
   margin-bottom: 32px;
   overflow: hidden;
   width: 100%;
+  position: relative;
+  z-index: 1;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  isolation: isolate;
 }
 
 .row {
@@ -181,6 +202,8 @@ body {
   gap: 16px;
   width: max-content;
   will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .square {
@@ -227,7 +250,7 @@ body {
   width: 16px;
   height: 16px;
   margin-bottom: 6px;
-  fill: #EB4335; /* rosso */
+  fill: #EB4335;
 }
 
 /* Testo della recensione */
@@ -254,8 +277,13 @@ body {
   100% { transform: translateX(0); }
 }
 
-.row-1 { animation: marquee-left 50s linear infinite; }
-.row-2 { animation: marquee-right 45s linear infinite; }
+.row-1 { 
+  animation: marquee-left 50s linear infinite; 
+}
+
+.row-2 { 
+  animation: marquee-right 45s linear infinite; 
+}
 
 /* --- Bottone Google --- */
 .google-share-btn {
@@ -274,9 +302,13 @@ body {
   gap: 10px;
   font-family: 'Inter', sans-serif;
   transition: background-color 0.2s ease;
+  position: relative;
+  z-index: 10;
 }
 
-.google-share-btn:hover { background: #333333; }
+.google-share-btn:hover { 
+  background: #333333; 
+}
 
 .google-logo {
   width: 22px;
@@ -290,13 +322,31 @@ body {
   color: #828282;
   cursor: pointer;
   text-decoration: underline;
+  position: relative;
+  z-index: 10;
 }
 
-.skip-text:hover { color: #000000; }
+.skip-text:hover { 
+  color: #000000; 
+}
+
+/* Animazione per il dropdown */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
 /* --- Mobile --- */
 @media (max-width: 480px) {
-  .share-container { padding: 16px; }
+  .share-container { 
+    padding: 16px; 
+  }
 
   .square {
     width: 150px;
@@ -337,6 +387,15 @@ body {
     padding: 10px 16px;
     font-size: 15px;
   }
+  
+  /* Animazioni più veloci su mobile */
+  .row-1 { 
+    animation: marquee-left 40s linear infinite; 
+  }
+  
+  .row-2 { 
+    animation: marquee-right 35s linear infinite; 
+  }
 }
 
 /* Schermi molto piccoli */
@@ -365,4 +424,13 @@ body {
   .coin-count {
     font-size: 15px;
   }
+}
+
+/* Aggiungi questa regola per mantenere l'animazione quando il dropdown è aperto */
+.dropdown-menu.show ~ .animated-squares .row {
+  animation-play-state: paused;
+}
+
+.row {
+  animation-play-state: running;
 }

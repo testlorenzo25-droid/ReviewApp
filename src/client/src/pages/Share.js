@@ -1,5 +1,5 @@
-// Share.js (versione corretta per produzione)
-import React, { useEffect, useState, useRef } from "react";
+// Share.js (versione corretta)
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
@@ -8,7 +8,8 @@ import {
   faArrowRightFromBracket,
   faFileLines,
   faCircleQuestion,
-  faComment
+  faComment,
+  faTrophy
 } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -23,6 +24,7 @@ function Share() {
   const [userName, setUserName] = useState("");
   const [userPhoto, setUserPhoto] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -51,6 +53,7 @@ function Share() {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
+        setIsDropdownOpen(false);
       }
     };
 
@@ -128,13 +131,14 @@ function Share() {
     return `${names[0]} ${names[1].charAt(0).toUpperCase()}.`;
   };
 
-  const renderSquares = () => {
+  // Memoizzare le card per prevenire rerendering non necessario
+  const renderedSquares = useMemo(() => {
     if (loading) {
       return [...Array(12)].map((_, i) => (
         <div key={i} className="square loading" aria-label="Caricamento recensione">
           <div className="review-header">
             <img
-              src="/default-profile.png"
+              src="/profile-picture.png"
               className="profile-image-mini"
               alt="Caricamento"
             />
@@ -149,7 +153,7 @@ function Share() {
         <div key={i} className="square error" aria-label="Errore caricamento">
           <div className="review-header">
             <img
-              src="/default-profile.png"
+              src="/profile-picture.png"
               className="profile-image-mini"
               alt="Errore"
             />
@@ -199,14 +203,24 @@ function Share() {
         </div>
       </div>
     ));
-  };
+  }, [loading, error, reviews]);
 
-  const Row = ({ className, items }) => (
+  const Row = React.memo(({ className, items }) => (
     <div className={`row ${className}`} aria-hidden="true">
       {items}
       {items}
     </div>
-  );
+  ));
+
+  // Memorizza le righe animate per prevenire ri-rendering
+  const memoizedRows = useMemo(() => {
+    return (
+      <div className="animated-squares">
+        <Row className="row-1" items={renderedSquares.slice(0, 6)} />
+        <Row className="row-2" items={renderedSquares.slice(6, 12)} />
+      </div>
+    );
+  }, [renderedSquares]);
 
   return (
     <div className="share-container">
@@ -229,7 +243,10 @@ function Share() {
         <div className="profile-dropdown-container" ref={dropdownRef}>
           <div
             className="profile-picture"
-            onClick={() => setShowDropdown(!showDropdown)}
+            onClick={() => {
+              setShowDropdown(!showDropdown);
+              setIsDropdownOpen(!isDropdownOpen);
+            }}
             aria-label="Menu profilo"
           >
             {userPhoto ? (
@@ -242,54 +259,56 @@ function Share() {
             <div className="status-dot"></div>
           </div>
 
-          {showDropdown && (
-            <div className="dropdown-menu">
-              <button
-                className="dropdown-item"
-                onClick={() => navigate("/feedback")}
-              >
-                <FontAwesomeIcon icon={faComment} />
-                <span>Feedback</span>
-              </button>
+          <div className={`dropdown-menu ${showDropdown ? 'show' : ''}`}>
+            <button
+              className="dropdown-item"
+              onClick={() => navigate("/wheel")}
+            >
+              <FontAwesomeIcon icon={faTrophy} />
+              <span>Gioca</span>
+            </button>
+            <button
+              className="dropdown-item"
+              onClick={() => navigate("/feedback")}
+            >
+              <FontAwesomeIcon icon={faComment} />
+              <span>Feedback</span>
+            </button>
 
-              <button
-                className="dropdown-item"
-                onClick={() => navigate("/share")}
-              >
-                <FontAwesomeIcon icon={faGoogle} />
-                <span>Google Review</span>
-              </button>
+            <button
+              className="dropdown-item"
+              onClick={() => navigate("/share")}
+            >
+              <FontAwesomeIcon icon={faGoogle} />
+              <span>Google Review</span>
+            </button>
 
-              <div className="dropdown-divider"></div>
+            <div className="dropdown-divider"></div>
 
-              <button className="dropdown-item">
-                <FontAwesomeIcon icon={faFileLines} />
-                <span>Guide</span>
-              </button>
+            <button className="dropdown-item">
+              <FontAwesomeIcon icon={faFileLines} />
+              <span>Guide</span>
+            </button>
 
-              <button className="dropdown-item">
-                <FontAwesomeIcon icon={faCircleQuestion} />
-                <span>Help Center</span>
-              </button>
+            <button className="dropdown-item">
+              <FontAwesomeIcon icon={faCircleQuestion} />
+              <span>Help Center</span>
+            </button>
 
-              <div className="dropdown-divider"></div>
+            <div className="dropdown-divider"></div>
 
-              <button
-                className="dropdown-item"
-                onClick={handleLogout}
-              >
-                <FontAwesomeIcon icon={faArrowRightFromBracket} />
-                <span>Logout</span>
-              </button>
-            </div>
-          )}
+            <button
+              className="dropdown-item"
+              onClick={handleLogout}
+            >
+              <FontAwesomeIcon icon={faArrowRightFromBracket} />
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="animated-squares">
-        <Row className="row-1" items={renderSquares().slice(0, 6)} />
-        <Row className="row-2" items={renderSquares().slice(6, 12)} />
-      </div>
+      {memoizedRows}
 
       <button
         className="google-share-btn"

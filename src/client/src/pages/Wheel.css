@@ -7,6 +7,7 @@ body {
   padding: 0;
   overflow: hidden;
   background-color: #FDFBFE;
+  font-family: 'Inter', sans-serif;
 }
 
 .wheel-container {
@@ -58,7 +59,7 @@ body {
   color: #19171A;
 }
 
-/* Stili per il dropdown del profilo (aggiunti) */
+/* Stili per il dropdown del profilo */
 .profile-dropdown-container {
   position: relative;
   display: flex;
@@ -105,7 +106,7 @@ body {
   right: 2px;
   width: 12px;
   height: 12px;
-  background-color: #4caf50; /* verde online */
+  background-color: #4caf50;
   border: 2px solid #fff;
   border-radius: 50%;
 }
@@ -115,7 +116,7 @@ body {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  margin: 0; 
+  margin: 0;
   background-color: #FDFBFE;
   border: 1px solid #EDEDED;
   border-radius: 12px;
@@ -125,6 +126,11 @@ body {
   z-index: 1000;
   overflow: hidden;
   padding: 12px 0;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transform-origin: top right;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
 }
 
 .dropdown-item {
@@ -139,26 +145,26 @@ body {
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   font-size: 15px;
-  color: #737373;
+  color: #19171A;
   transition: background-color 0.2s ease;
 }
 
 .dropdown-item:hover {
   background-color: #F5F5F5;
-  color: #737373;
+  color: #19171A;
 }
 
 .dropdown-divider {
   height: 1px;
   background-color: #EDEDED;
-  margin: 8px 0;
+  margin: 8px 10px;
 }
 
 /* Icone con colore #737373 */
 .dropdown-item .svg-inline--fa {
   width: 20px;
   height: 20px;
-  color: #737373;
+  color: #19171A;
 }
 
 /* Titoli */
@@ -199,13 +205,24 @@ body {
   transition: transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   transform: rotate(0deg);
+  border: 8px solid #fff;
+  background: conic-gradient(#FF6B6B 0deg 45deg,
+      #4ECDC4 45deg 90deg,
+      #FFD166 90deg 135deg,
+      #06D6A0 135deg 180deg,
+      #118AB2 180deg 225deg,
+      #073B4C 225deg 270deg,
+      #9E9E9E 270deg 315deg,
+      #7109B7 315deg 360deg);
 }
 
 .wheel-section {
   position: absolute;
   width: 50%;
   height: 50%;
-  transform-origin: bottom right;
+  top: 0;
+  left: 50%;
+  transform-origin: bottom left;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,27 +231,26 @@ body {
 
 .wheel-section-content {
   position: absolute;
-  left: 0;
-  width: 150px;
+  width: 100px;
   height: 30px;
   text-align: center;
-  transform-origin: bottom left;
-  transform: rotate(45deg) translateX(10px);
+  transform: rotate(45deg) translate(30px, -10px);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
   color: #fff;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  transform-origin: center;
 }
 
 .wheel-pointer {
   position: absolute;
-  top: -20px;
+  top: -24px;
   left: 50%;
   transform: translateX(-50%);
-  width: 30px;
+  width: 24px;
   height: 40px;
   z-index: 10;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
@@ -267,16 +283,7 @@ body {
   transform: none;
 }
 
-/* Risultato */
-.wheel-result {
-  font-size: 18px;
-  font-weight: 600;
-  color: #19171A;
-  margin-top: 20px;
-  min-height: 27px;
-}
-
-/* Notifiche (stile coerente con Feedback) */
+/* Notifiche */
 .wheel-notification {
   position: fixed;
   bottom: 30px;
@@ -308,6 +315,10 @@ body {
 }
 
 .wheel-notification.success {
+  background-color: #FDFBFE;
+}
+
+.wheel-notification.failure {
   background-color: #FDFBFE;
 }
 
@@ -367,6 +378,47 @@ body {
   background-color: #d0d0d0;
 }
 
+.notification-button.confirm.failure {
+  background-color: #19171A;
+  color: #FDFBFE;
+}
+
+.notification-button.confirm.failure:hover {
+  background-color: #0a090a;
+}
+
+/* Pulsante di chiusura */
+.notification-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 36px;
+  cursor: pointer;
+  color: #737373;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  line-height: 1;
+  padding: 0;
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  animation: fadeInScale 0.3s ease forwards;
+}
+
+.notification-close:hover {
+  background-color: #f5f5f5;
+}
+
 /* RESPONSIVE */
 @media (max-width: 480px) {
   .wheel-container {
@@ -374,9 +426,10 @@ body {
   }
 
   .wheel-wrapper {
-    width: 280px;
-    height: 280px;
-    margin-bottom: 30px;
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto 40px;
   }
 
   .wheel-title {
@@ -387,21 +440,21 @@ body {
     padding: 14px 32px;
     font-size: 16px;
   }
-  
+
   .coin-display {
     height: 32px;
     padding: 2px 20px;
   }
-  
+
   .coin-icon img {
     width: 18px;
     height: 18px;
   }
-  
+
   .coin-count {
     font-size: 15px;
   }
-  
+
   .wheel-notification {
     bottom: 20px;
     left: 16px;
@@ -416,15 +469,69 @@ body {
     width: 50px;
     height: 50px;
   }
-  
+
   .dropdown-menu {
     min-width: 240px;
     right: 0;
     max-width: calc(100vw - 32px);
   }
-  
+
   .dropdown-item {
     padding: 10px 16px;
     font-size: 15px;
+  }
+
+  /* Miglioramenti responsive per la ruota */
+  .wheel-section-content {
+    font-size: 10px;
+    width: 80px;
+    transform: rotate(45deg) translate(25px, -5px);
+  }
+
+  .wheel-pointer {
+    width: 20px;
+    height: 34px;
+    top: -20px;
+  }
+
+  /* Pulsante di chiusura su mobile */
+  .notification-close {
+    top: 12px;
+    right: 12px;
+    font-size: 32px;
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Animazione per la notifica */
+@keyframes slideInFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(-10px);
+  }
+}
+
+.wheel-notification.visible {
+  opacity: 1;
+  transform: translateY(-10px);
+  animation: slideInFromBottom 0.5s ease forwards;
+}
+
+/* Animazione per il dropdown del profilo */
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

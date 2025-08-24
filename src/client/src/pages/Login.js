@@ -74,9 +74,9 @@ function Login() {
 
       <div className="login-section">
         <h2 className="text-grey">Reviù</h2>
-        <h2 className="text-dark">Meet Reviù</h2>
+        <h2 className="text-dark">Scopri Reviù</h2>
         <h2 className="text-grey">
-          Your voice, their <br /> growth, your reward.
+          La tua voce, la loro <br /> crescita, la tua ricompensa.
         </h2>
 
         <button 
@@ -84,7 +84,7 @@ function Login() {
           onClick={handleLogin}
           disabled={isLoggingIn}
           style={loginError ? {backgroundColor: '#ffebee', color: '#c62828'} : {}}
-          aria-label="Continua con Google"
+          aria-label="Accedi con Google"
         >
           <img
             src="https://www.svgrepo.com/show/303108/google-icon-logo.svg"
@@ -92,7 +92,7 @@ function Login() {
             className="google-logo"
           />
           {isLoggingIn ? "Accesso in corso..." : 
-           loginError ? "Errore nel login. Riprova!" : "Continua con Google"}
+           loginError ? "Errore nel login. Riprova!" : "Accedi con Google"}
         </button>
 
         <p className="legal-text">

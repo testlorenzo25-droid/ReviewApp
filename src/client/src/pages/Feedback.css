@@ -1,11 +1,14 @@
 /* Feedback.css (versione completa e corretta) */
 html,
 body {
-  height: 100vh;   /* fallback */
-  height: 100dvh;  /* altezza dinamica corretta su Safari iOS / moderni */
+  height: 100vh;
+  /* fallback */
+  height: 100dvh;
+  /* altezza dinamica corretta su Safari iOS / moderni */
   margin: 0;
   padding: 0;
-  overflow: hidden; /* niente scroll */
+  overflow: hidden;
+  /* niente scroll */
   background-color: #FDFBFE;
 }
 
@@ -45,6 +48,10 @@ body {
   justify-content: center;
   gap: 6px;
 }
+.coin-display:hover {
+  background-color: #e0e0e0; /* colore hover */
+  cursor: pointer; /* opzionale, fa vedere che è cliccabile */
+}
 
 .coin-icon {
   display: flex;
@@ -54,7 +61,8 @@ body {
 
 .coin-count {
   font-size: 16px;
-  font-weight: 700; /* Testo in grassetto */
+  font-weight: 700;
+  /* Testo in grassetto */
   color: #19171A;
 }
 
@@ -77,6 +85,7 @@ body {
   overflow: visible;
   position: relative;
 }
+
 .profile-image {
   width: 100%;
   height: 100%;
@@ -103,26 +112,38 @@ body {
   right: 2px;
   width: 12px;
   height: 12px;
-  background-color: #4caf50; /* verde online */
+  background-color: #4caf50;
+  /* verde online */
   border: 2px solid #fff;
   border-radius: 50%;
 }
 
-/* Dropdown senza ombra, con bordi e colori specifici */
 .dropdown-menu {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  margin: 0; 
-  background-color: #FDFBFE; /* Cambiato da #FFFFFF */
-  border: 1px solid #EDEDED; /* Aggiunto bordo */
+  margin: 0;
+  background-color: #FDFBFE;
+  border: 1px solid #EDEDED;
   border-radius: 12px;
-  box-shadow: none; /* Rimosso box-shadow */
+  box-shadow: none;
   min-width: 240px;
   max-width: calc(100vw - 40px);
   z-index: 1000;
   overflow: hidden;
   padding: 12px 0;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  transform-origin: top right;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  animation: fadeInScale 0.3s ease forwards;
 }
 
 .dropdown-item {
@@ -137,18 +158,21 @@ body {
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   font-size: 15px;
-  color: #737373; /* Testo colore #737373 */
+  color: #737373;
+  /* Testo colore #737373 */
   transition: background-color 0.2s ease;
 }
 
 .dropdown-item:hover {
   background-color: #F5F5F5;
-  color: #737373; /* Mantiene lo stesso colore anche al hover */
+  color: #737373;
+  /* Mantiene lo stesso colore anche al hover */
 }
 
 .dropdown-divider {
   height: 1px;
-  background-color: #EDEDED; /* Colore del divisore */
+  background-color: #EDEDED;
+  /* Colore del divisore */
   margin: 8px 0;
 }
 
@@ -156,7 +180,8 @@ body {
 .dropdown-item .svg-inline--fa {
   width: 20px;
   height: 20px;
-  color: #737373; /* Colore delle icone */
+  color: #737373;
+  /* Colore delle icone */
 }
 
 /* Il resto del CSS rimane invariato */
@@ -302,7 +327,7 @@ body {
 }
 
 .feedback-button-submit:hover {
-  background-color: #080808;
+  background-color: #333333;
 }
 
 .feedback-button-submit:disabled {
@@ -450,6 +475,7 @@ body {
     opacity: 0;
     transform: translateY(100%);
   }
+
   100% {
     opacity: 1;
     transform: translateY(-10px);
@@ -469,22 +495,80 @@ body {
   right: 16px;
   background: none;
   border: none;
-  font-size: 36px; /* Modificato da 24px a 36px */
+  font-size: 36px;
+  /* Modificato da 24px a 36px */
   cursor: pointer;
   color: #737373;
-  width: 40px; /* Aumentato per accomodare la X più grande */
-  height: 40px; /* Aumentato per accomodare la X più grande */
+  width: 40px;
+  /* Aumentato per accomodare la X più grande */
+  height: 40px;
+  /* Aumentato per accomodare la X più grande */
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   transition: background-color 0.2s ease;
-  line-height: 1; /* Assicura che la X sia centrata verticalmente */
-  padding: 0; /* Rimuove eventuali padding predefiniti */
+  line-height: 1;
+  /* Assicura che la X sia centrata verticalmente */
+  padding: 0;
+  /* Rimuove eventuali padding predefiniti */
 }
 
 .notification-close:hover {
   background-color: #f5f5f5;
+}
+
+/* Animazione per il pulsante delle emoticon */
+@keyframes wavePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    transform: scale(1.2); /* Ingrandimento leggermente aumentato */
+    box-shadow: 0 0 0 12px rgba(0, 0, 0, 0.05); /* Ombra più ampia */
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  }
+}
+
+@keyframes waveBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-25px); /* Salto più alto */
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  75% {
+    transform: translateY(-5px);
+  }
+}
+
+.feedback-emoji.emoji-wave {
+  animation: wavePulse 1.2s ease-in-out;
+}
+
+.feedback-emoji.emoji-wave .emoji {
+  animation: waveBounce 1.2s ease-in-out;
+  filter: none !important;
+}
+
+.feedback-emoji.emoji-wave {
+  border: 3px solid; /* Il colore sarà impostato dinamicamente via JS */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Aggiungi un'ombra per enfatizzare */
+}
+
+.feedback-emoji {
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.feedback-emoji .emoji {
+  transition: all 0.3s ease;
 }
 
 /* Responsive per dispositivi mobili */
@@ -519,17 +603,17 @@ body {
     padding: 32px 32px;
     min-height: 32%;
   }
-  
+
   .coin-display {
     height: 32px;
     padding: 2px 20px;
   }
-  
+
   .coin-icon img {
     width: 18px;
     height: 18px;
   }
-  
+
   .coin-count {
     font-size: 15px;
   }
@@ -537,12 +621,12 @@ body {
   .coin-earned-notification {
     margin-top: 10px;
   }
-  
+
   .notification-coin-icon {
     width: 22px;
     height: 22px;
   }
-  
+
   .coin-plus {
     font-size: 18px;
   }
@@ -552,13 +636,13 @@ body {
     width: 50px;
     height: 50px;
   }
-  
+
   .dropdown-menu {
     min-width: 240px;
     right: 0;
     max-width: calc(100vw - 32px);
   }
-  
+
   .dropdown-item {
     padding: 10px 16px;
     font-size: 15px;
@@ -568,7 +652,8 @@ body {
   .notification-close {
     top: 12px;
     right: 12px;
-    font-size: 32px; /* Leggermente più piccolo su mobile */
+    font-size: 32px;
+    /* Leggermente più piccolo su mobile */
     width: 36px;
     height: 36px;
   }
@@ -578,7 +663,20 @@ body {
   .feedback-container {
     max-width: 480px;
   }
+
   .feedback-notification {
     max-width: calc(600px - 40px);
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

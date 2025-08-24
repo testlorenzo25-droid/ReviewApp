@@ -21,7 +21,8 @@ import {
   faArrowRightFromBracket,
   faFileLines,
   faCircleQuestion,
-  faComment
+  faComment,
+  faTrophy
 } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -45,7 +46,9 @@ function Feedback() {
   });
   const [userPhoto, setUserPhoto] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [animateEmojis, setAnimateEmojis] = useState(false);
   const dropdownRef = useRef(null);
+  const emojiRefs = useRef([]);
 
   const navigate = useNavigate();
 
@@ -83,9 +86,14 @@ function Feedback() {
     };
   }, []);
 
-  const handleCoinClick = () => {
-    navigate('/wheel');
-  };
+  // Aggiungi questo nuovo useEffect per l'animazione iniziale
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAnimateEmojis(true);
+    }, 500); // Inizia l'animazione dopo 0.5 secondi dal caricamento
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const canSubmitFeedback = useCallback(() => {
     if (feedbackCountThisMonth >= 3) {
@@ -100,6 +108,42 @@ function Feedback() {
 
     return true;
   }, [feedbackCountThisMonth, lastFeedbackDate]);
+
+  useEffect(() => {
+    if (animateEmojis && canSubmitFeedback()) {
+      emojiRefs.current.forEach((emojiEl, index) => {
+        if (emojiEl) {
+          // Imposta il colore del bordo in base all'emoji
+          const emojiColors = [
+            "#e53935", // Rosso per 😡
+            "#1e88e5", // Blu per 😢
+            "#757575", // Grigio per 😐
+            "#43a047", // Verde per 😊
+            "#e91e63"  // Rosa per 😍
+          ];
+
+          // Aggiungi un delay crescente per creare l'effetto onda
+          setTimeout(() => {
+            emojiEl.classList.add('emoji-wave');
+            // Imposta il colore del bordo
+            emojiEl.style.borderColor = emojiColors[index];
+
+            // Rimuovi la classe dopo l'animazione per poterla riutilizzare
+            setTimeout(() => {
+              if (emojiEl) {
+                emojiEl.classList.remove('emoji-wave');
+                emojiEl.style.borderColor = ''; // Ripristina il colore del bordo
+              }
+            }, 1200); // Durata dell'animazione
+          }, index * 250); // 250ms di delay tra un'emoticon e l'altra
+        }
+      });
+    }
+  }, [animateEmojis, canSubmitFeedback]);
+
+  const handleCoinClick = () => {
+    navigate('/wheel');
+  };
 
   useEffect(() => {
     let interval;
@@ -405,7 +449,14 @@ function Feedback() {
           </div>
 
           {showDropdown && (
-            <div className="dropdown-menu">
+            <div className="dropdown-menu show">
+              <button
+                className="dropdown-item"
+                onClick={() => navigate("/wheel")}
+              >
+                <FontAwesomeIcon icon={faTrophy} />
+                <span>Gioca</span>
+              </button>
               <button
                 className="dropdown-item"
                 onClick={() => navigate("/feedback")}
@@ -464,17 +515,20 @@ function Feedback() {
             className={`feedback-emoji ${rating === index + 1 ? "active" : ""}`}
             style={{
               borderColor: rating === index + 1 ? emoji.color : "transparent",
+              backgroundColor: rating === index + 1 ? "rgba(237, 237, 237, 0.9)" : "rgba(237, 237, 237, 0.7)",
               opacity: canSubmitFeedback() ? 1 : 0.5,
               cursor: canSubmitFeedback() ? "pointer" : "not-allowed"
             }}
             onClick={() => canSubmitFeedback() && setRating(index + 1)}
             disabled={!canSubmitFeedback()}
             aria-label={`Valutazione ${index + 1} stelle: ${emoji.label}`}
+            ref={el => emojiRefs.current[index] = el}
           >
             <span
               className="emoji"
               style={{
-                filter: rating === index + 1 ? "none" : "grayscale(100%)"
+                filter: rating === index + 1 ? "none" : "grayscale(100%)",
+                transform: rating === index + 1 ? "scale(1.1)" : "scale(1)"
               }}
             >
               {emoji.icon}

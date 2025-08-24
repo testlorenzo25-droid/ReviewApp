@@ -1,4 +1,4 @@
-// Wheel.js (versione corretta per produzione)
+// Wheel.js
 import React, { useState, useEffect, useRef } from "react";
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -8,7 +8,8 @@ import {
   faArrowRightFromBracket,
   faFileLines,
   faCircleQuestion,
-  faComment
+  faComment,
+  faTrophy 
 } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,30 +17,31 @@ import './Wheel.css';
 
 function Wheel() {
   const [spinning, setSpinning] = useState(false);
-  const [result, setResult] = useState("");
   const [userCoins, setUserCoins] = useState(0);
   const [userId, setUserId] = useState("");
   const [canSpin, setCanSpin] = useState(true);
   const [notification, setNotification] = useState({
     visible: false,
-    message: ''
+    message: '',
+    isWinner: false
   });
   const [userName, setUserName] = useState("");
   const [userPhoto, setUserPhoto] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const wheelRef = useRef(null);
 
   const navigate = useNavigate();
 
   const wheelSections = [
-    { text: "Fortuna", color: "#FF6B6B", prize: "10 coin" },
-    { text: "Destino", color: "#4ECDC4", prize: "5 coin" },
-    { text: "Sorte", color: "#FFD166", prize: "20 coin" },
-    { text: "Chance", color: "#06D6A0", prize: "2 coin" },
-    { text: "Luck", color: "#118AB2", prize: "15 coin" },
-    { text: "Azardo", color: "#073B4C", prize: "8 coin" },
-    { text: "Rischio", color: "#9E9E9E", prize: "25 coin" },
-    { text: "Vento", color: "#7209B7", prize: "3 coin" }
+    { text: "Fortuna", color: "#FF6B6B", winner: true },
+    { text: "Destino", color: "#4ECDC4", winner: false },
+    { text: "Sorte", color: "#FFD166", winner: false },
+    { text: "Chance", color: "#06D6A0", winner: false },
+    { text: "Luck", color: "#118AB2", winner: false },
+    { text: "Azardo", color: "#073B4C", winner: false },
+    { text: "Rischio", color: "#9E9E9E", winner: false },
+    { text: "Vento", color: "#7109b72b", winner: false }
   ];
 
   useEffect(() => {
@@ -61,7 +63,6 @@ function Wheel() {
     return () => unsubscribe();
   }, [navigate]);
 
-  // Aggiungi useEffect per gestire il click outside del dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -103,52 +104,73 @@ function Wheel() {
     if (spinning || !canSpin) return;
 
     setSpinning(true);
-    setResult("");
 
     const winningSectionIndex = Math.floor(Math.random() * wheelSections.length);
     const degrees = 1800 + (winningSectionIndex * (360 / wheelSections.length)) + Math.floor(Math.random() * (360 / wheelSections.length));
 
-    const wheel = document.querySelector('.wheel');
-    wheel.style.transform = `rotate(${degrees}deg)`;
-    wheel.style.transition = 'transform 5s cubic-bezier(0.4, 0.2, 0.2, 1)';
+    // Reset della rotazione prima di iniziare una nuova animazione
+    if (wheelRef.current) {
+      wheelRef.current.style.transition = 'none';
+      wheelRef.current.style.transform = 'rotate(0deg)';
+      
+      // Forza un reflow per assicurarsi che il reset venga applicato
+      void wheelRef.current.offsetWidth;
+    }
 
-    setTimeout(async () => {
-      try {
-        const newCoins = userCoins - 1;
-        setUserCoins(newCoins);
-
-        await updateDoc(doc(db, "users", userId), {
-          coins: newCoins
-        });
-
-        const prizeText = wheelSections[winningSectionIndex].prize;
-        const prizeAmount = parseInt(prizeText);
-
-        const finalCoins = newCoins + prizeAmount;
-        setUserCoins(finalCoins);
-
-        await updateDoc(doc(db, "users", userId), {
-          coins: finalCoins
-        });
-
-        setResult(`Hai vinto ${prizeText}!`);
-        setCanSpin(finalCoins >= 1);
-
-        setNotification({
-          visible: true,
-          message: `Congratulazioni! Hai vinto ${prizeText}`
-        });
-      } catch (error) {
-        console.error("Errore nell'aggiornamento dei coin:", error);
-        setResult("Errore nel calcolo del premio");
-      } finally {
-        setSpinning(false);
+    // Applica la rotazione
+    setTimeout(() => {
+      if (wheelRef.current) {
+        wheelRef.current.style.transition = 'transform 5s cubic-bezier(0.4, 0.2, 0.2, 1)';
+        wheelRef.current.style.transform = `rotate(${degrees}deg)`;
       }
-    }, 5000);
+
+      setTimeout(async () => {
+        try {
+          const newCoins = userCoins - 1;
+          setUserCoins(newCoins);
+
+          await updateDoc(doc(db, "users", userId), {
+            coins: newCoins
+          });
+
+          const isWinner = wheelSections[winningSectionIndex].winner;
+          let finalCoins = newCoins;
+          let message = "C’eri quasi!";
+
+          if (isWinner) {
+            const prizeAmount = 1;
+            finalCoins = newCoins + prizeAmount;
+            message = `Congratulazioni! Hai vinto ${prizeAmount} coin!`;
+
+            await updateDoc(doc(db, "users", userId), {
+              coins: finalCoins
+            });
+          }
+
+          setUserCoins(finalCoins);
+          setCanSpin(finalCoins >= 1);
+
+          setNotification({
+            visible: true,
+            message: message,
+            isWinner: isWinner
+          });
+        } catch (error) {
+          console.error("Errore nell'aggiornamento dei coin:", error);
+        } finally {
+          setSpinning(false);
+        }
+      }, 5000);
+    }, 10);
   };
 
   const closeNotification = () => {
-    setNotification({ visible: false, message: '' });
+    setNotification({ visible: false, message: '', isWinner: false });
+  };
+
+  const handleGetAnotherCoin = () => {
+    closeNotification();
+    navigate('/share');
   };
 
   const handleCoinClick = () => {
@@ -190,7 +212,14 @@ function Wheel() {
           </div>
 
           {showDropdown && (
-            <div className="dropdown-menu">
+            <div className="dropdown-menu show">
+              <button
+                className="dropdown-item"
+                onClick={() => navigate("/wheel")}
+              >
+                <FontAwesomeIcon icon={faTrophy} />
+                <span>Gioca</span>
+              </button>
               <button
                 className="dropdown-item"
                 onClick={() => navigate("/feedback")}
@@ -237,7 +266,7 @@ function Wheel() {
       <p className="wheel-subtitle">Spendi 1 coin per girare la ruota e vincere premi!</p>
 
       <div className="wheel-wrapper">
-        <div className="wheel">
+        <div className="wheel" ref={wheelRef}>
           {wheelSections.map((section, index) => {
             const rotation = (360 / wheelSections.length) * index;
             return (
@@ -257,7 +286,7 @@ function Wheel() {
           })}
         </div>
         <img
-          src="https://cdn-icons-png.flaticon.com/512/66/66420.png"
+          src="https://cdn-icons-png.flaticon.com/512/32/32195.png"
           alt="Pointer"
           className="wheel-pointer"
         />
@@ -271,18 +300,27 @@ function Wheel() {
         {spinning ? "Girando..." : "Gira la ruota (1 coin)"}
       </button>
 
-      <div className="wheel-result">{result}</div>
-
       {notification.visible && (
         <>
           <div className="wheel-notification-overlay visible" onClick={closeNotification}></div>
-          <div className="wheel-notification visible success">
+          <div className={`wheel-notification visible ${notification.isWinner ? 'success' : 'failure'}`}>
+            <button
+              className="notification-close"
+              onClick={closeNotification}
+              aria-label="Chiudi notifica"
+            >
+              &times;
+            </button>
+
             <div className="notification-content">
               {notification.message}
             </div>
             <div className="notification-buttons">
-              <button className="notification-button confirm" onClick={closeNotification}>
-                OK
+              <button
+                className={`notification-button confirm ${notification.isWinner ? '' : 'failure'}`}
+                onClick={notification.isWinner ? closeNotification : handleGetAnotherCoin}
+              >
+                {notification.isWinner ? 'Continua' : 'Ottieni un\'altra coin'}
               </button>
             </div>
           </div>
