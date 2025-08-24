@@ -41,7 +41,7 @@ function Wheel() {
     { text: "Luck", color: "#118AB2", winner: false },
     { text: "Azardo", color: "#073B4C", winner: false },
     { text: "Rischio", color: "#9E9E9E", winner: false },
-    { text: "Vento", color: "#7109b72b", winner: false }
+    { text: "Vento", color: "#7109B7", winner: false }
   ];
 
   useEffect(() => {
@@ -105,9 +105,17 @@ function Wheel() {
 
     setSpinning(true);
 
+    // Calcola un angolo casuale per la sezione vincente
     const winningSectionIndex = Math.floor(Math.random() * wheelSections.length);
-    const degrees = 1800 + (winningSectionIndex * (360 / wheelSections.length)) + Math.floor(Math.random() * (360 / wheelSections.length));
-
+    const sectionAngle = 360 / wheelSections.length;
+    
+    // Aggiunge più rotazioni per un effetto più realistico (da 5 a 7 giri completi)
+    const fullRotations = 5 + Math.floor(Math.random() * 3);
+    const baseDegrees = fullRotations * 360;
+    
+    // Calcola l'angolo finale per fermarsi al centro della sezione vincente
+    const finalAngle = baseDegrees + (winningSectionIndex * sectionAngle) + (sectionAngle / 2);
+    
     // Reset della rotazione prima di iniziare una nuova animazione
     if (wheelRef.current) {
       wheelRef.current.style.transition = 'none';
@@ -120,8 +128,8 @@ function Wheel() {
     // Applica la rotazione
     setTimeout(() => {
       if (wheelRef.current) {
-        wheelRef.current.style.transition = 'transform 5s cubic-bezier(0.4, 0.2, 0.2, 1)';
-        wheelRef.current.style.transform = `rotate(${degrees}deg)`;
+        wheelRef.current.style.transition = 'transform 4s cubic-bezier(0.3, 0.1, 0.1, 1)';
+        wheelRef.current.style.transform = `rotate(${finalAngle}deg)`;
       }
 
       setTimeout(async () => {
@@ -135,10 +143,10 @@ function Wheel() {
 
           const isWinner = wheelSections[winningSectionIndex].winner;
           let finalCoins = newCoins;
-          let message = "C’eri quasi!";
+          let message = "C’eri quasi! Ritenta per vincere!";
 
           if (isWinner) {
-            const prizeAmount = 1;
+            const prizeAmount = 10; // Aumentato il premio per renderlo più interessante
             finalCoins = newCoins + prizeAmount;
             message = `Congratulazioni! Hai vinto ${prizeAmount} coin!`;
 
@@ -160,7 +168,7 @@ function Wheel() {
         } finally {
           setSpinning(false);
         }
-      }, 5000);
+      }, 4000);
     }, 10);
   };
 
@@ -183,7 +191,6 @@ function Wheel() {
         <div
           className="coin-display"
           onClick={handleCoinClick}
-          style={{ cursor: 'pointer' }}
         >
           <div className="coin-icon">
             <img
@@ -284,6 +291,9 @@ function Wheel() {
               </div>
             );
           })}
+          <div className="wheel-center">
+            <div className="wheel-center-inner"></div>
+          </div>
         </div>
         <img
           src="https://cdn-icons-png.flaticon.com/512/32/32195.png"

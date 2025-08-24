@@ -18,14 +18,13 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100dvh;
+  min-height: 100dvh;
   box-sizing: border-box;
   text-align: center;
   overflow: hidden;
   position: relative;
 }
 
-/* TOPBAR - Stile coerente con le altre pagine */
 .wheel-topbar {
   display: flex;
   justify-content: space-between;
@@ -34,6 +33,8 @@ body {
   padding: 12px 0%;
   box-sizing: border-box;
   margin-bottom: 20px;
+  position: relative;
+  z-index: 10; /* Aggiungi questa regola */
 }
 
 .coin-display {
@@ -45,6 +46,13 @@ body {
   height: 32px;
   justify-content: center;
   gap: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  z-index: 11;
+}
+
+.coin-display:hover {
+  background-color: #e8e8e8;
 }
 
 .coin-icon {
@@ -64,6 +72,7 @@ body {
   position: relative;
   display: flex;
   align-items: center;
+  z-index: 11;
 }
 
 .profile-picture {
@@ -78,6 +87,11 @@ body {
   overflow: visible;
   position: relative;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profile-picture:hover {
+  transform: scale(1.05);
 }
 
 .profile-image {
@@ -120,7 +134,7 @@ body {
   background-color: #FDFBFE;
   border: 1px solid #EDEDED;
   border-radius: 12px;
-  box-shadow: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   min-width: 240px;
   max-width: calc(100vw - 40px);
   z-index: 1000;
@@ -188,12 +202,15 @@ body {
   text-align: center;
 }
 
-/* Contenitore della ruota */
+/* Contenitore della ruota - MODIFICATO */
 .wheel-wrapper {
   position: relative;
-  width: 300px;
-  height: 300px;
+  width: 340px;
+  height: 320px;
   margin: 0 auto 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .wheel {
@@ -202,18 +219,20 @@ body {
   border-radius: 50%;
   position: relative;
   overflow: hidden;
-  transition: transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  transition: transform 6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.12);
   transform: rotate(0deg);
-  border: 8px solid #fff;
-  background: conic-gradient(#FF6B6B 0deg 45deg,
-      #4ECDC4 45deg 90deg,
-      #FFD166 90deg 135deg,
-      #06D6A0 135deg 180deg,
-      #118AB2 180deg 225deg,
-      #073B4C 225deg 270deg,
-      #9E9E9E 270deg 315deg,
-      #7109B7 315deg 360deg);
+  border: 10px solid #fff;
+  background: conic-gradient(
+    #FF6B6B 0deg 45deg,
+    #4ECDC4 45deg 90deg,
+    #FFD166 90deg 135deg,
+    #06D6A0 135deg 180deg,
+    #118AB2 180deg 225deg,
+    #073B4C 225deg 270deg,
+    #9E9E9E 270deg 315deg,
+    #7109B7 315deg 360deg
+  );
 }
 
 .wheel-section {
@@ -234,53 +253,81 @@ body {
   width: 100px;
   height: 30px;
   text-align: center;
-  transform: rotate(45deg) translate(30px, -10px);
+  transform: rotate(45deg) translate(40px, -15px);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 12px;
+  font-weight: 700;
+  font-size: 13px;
   color: #fff;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
   transform-origin: center;
+}
+
+.wheel-center {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: #fff;
+  border-radius: 50%;
+  z-index: 5;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wheel-center-inner {
+  width: 30px;
+  height: 30px;
+  background: #19171A;
+  border-radius: 50%;
 }
 
 .wheel-pointer {
   position: absolute;
-  top: -24px;
+  top: -28px;
   left: 50%;
   transform: translateX(-50%);
-  width: 24px;
-  height: 40px;
+  width: 28px;
+  height: 44px;
   z-index: 10;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.3));
 }
 
 /* Pulsante di spin */
 .spin-button {
   padding: 16px 40px;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 18px;
   font-weight: 600;
-  background: #131313;
+  background: linear-gradient(135deg, #19171A, #37343A);
   color: #FDFBFE;
   border: none;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(25, 23, 26, 0.2);
 }
 
 .spin-button:hover {
-  background: #080808;
+  background: linear-gradient(135deg, #37343A, #19171A);
   transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(25, 23, 26, 0.25);
+}
+
+.spin-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(25, 23, 26, 0.2);
 }
 
 .spin-button:disabled {
-  background-color: #e0e0e0;
+  background: #e0e0e0;
   color: #aaa;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 /* Notifiche */
@@ -292,8 +339,8 @@ body {
   background-color: #FDFBFE;
   color: #131313;
   padding: 32px 32px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   opacity: 0;
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -316,10 +363,12 @@ body {
 
 .wheel-notification.success {
   background-color: #FDFBFE;
+  border: 1px solid #EDEDED;
 }
 
 .wheel-notification.failure {
   background-color: #FDFBFE;
+  border: 1px solid #EDEDED;
 }
 
 .wheel-notification-overlay {
@@ -328,8 +377,8 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -366,25 +415,28 @@ body {
   cursor: pointer;
   font-size: 16px;
   font-family: 'Inter', sans-serif;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .notification-button.confirm {
-  background-color: #131313;
-  color: #e0e0e0;
+  background: linear-gradient(135deg, #19171A, #37343A);
+  color: #FDFBFE;
+  box-shadow: 0 2px 8px rgba(25, 23, 26, 0.2);
 }
 
 .notification-button.confirm:hover {
-  background-color: #d0d0d0;
+  background: linear-gradient(135deg, #37343A, #19171A);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(25, 23, 26, 0.25);
 }
 
 .notification-button.confirm.failure {
-  background-color: #19171A;
+  background: linear-gradient(135deg, #19171A, #37343A);
   color: #FDFBFE;
 }
 
 .notification-button.confirm.failure:hover {
-  background-color: #0a090a;
+  background: linear-gradient(135deg, #37343A, #19171A);
 }
 
 /* Pulsante di chiusura */
@@ -426,10 +478,9 @@ body {
   }
 
   .wheel-wrapper {
-    position: relative;
-    width: 300px;
-    height: 300px;
-    margin: 0 auto 40px;
+    width: 295px;
+    height: 280px;
+    margin: 0 auto 32px;
   }
 
   .wheel-title {
@@ -462,6 +513,7 @@ body {
     max-width: calc(100% - 32px);
     padding: 24px;
     min-height: 32%;
+    border-radius: 16px;
   }
 
   /* Responsive per il dropdown */
@@ -483,15 +535,25 @@ body {
 
   /* Miglioramenti responsive per la ruota */
   .wheel-section-content {
-    font-size: 10px;
-    width: 80px;
-    transform: rotate(45deg) translate(25px, -5px);
+    font-size: 11px;
+    width: 85px;
+    transform: rotate(45deg) translate(35px, -12px);
+  }
+
+  .wheel-center {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .wheel-center-inner {
+    width: 25px;
+    height: 25px;
   }
 
   .wheel-pointer {
-    width: 20px;
-    height: 34px;
-    top: -20px;
+    width: 24px;
+    height: 38px;
+    top: -24px;
   }
 
   /* Pulsante di chiusura su mobile */
@@ -534,4 +596,45 @@ body {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+/* Animazione per la rotazione della ruota */
+@keyframes wheelSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(360deg);
+  }
+  40% {
+    transform: rotate(720deg);
+  }
+  60% {
+    transform: rotate(1080deg);
+  }
+  80% {
+    transform: rotate(1440deg);
+  }
+  100% {
+    transform: rotate(var(--rotation, 1800deg));
+  }
+}
+
+/* Effetti di luce durante la rotazione */
+@keyframes glowEffect {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.12);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+  }
+}
+
+.wheel.spinning {
+  animation: glowEffect 1s infinite;
+}
+
+/* Effetto di rallentamento finale */
+.slowdown {
+  transition: transform 2s cubic-bezier(0.1, 0.3, 0.2, 1) !important;
 }
