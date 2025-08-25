@@ -1,8 +1,7 @@
-// Share.js (versione corretta)
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import {
   faArrowRightFromBracket,
@@ -28,12 +27,19 @@ function Share() {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
+    let unsubscribeUser = null;
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         const nameFromEmail = currentUser.email.split('@')[0];
         setUserName(nameFromEmail);
         setUserPhoto(currentUser.photoURL || "");
-        await loadUserData(currentUser.uid);
+        // Listener realtime sulle coin
+        unsubscribeUser = onSnapshot(doc(db, "users", currentUser.uid), (docSnap) => {
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setUserCoins(userData.coins || 0);
+          }
+        });
         fetchReviews();
       } else {
         const hasToken = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
@@ -45,10 +51,12 @@ function Share() {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      if (unsubscribeUser) unsubscribeUser();
+    };
   }, [navigate]);
 
-  // Aggiungi useEffect per gestire il click outside del dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -65,18 +73,6 @@ function Share() {
 
   const handleCoinClick = () => {
     navigate('/wheel');
-  };
-
-  const loadUserData = async (uid) => {
-    try {
-      const userDoc = await getDoc(doc(db, "users", uid));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        setUserCoins(userData.coins || 0);
-      }
-    } catch (error) {
-      console.error("Errore nel caricamento dati utente:", error);
-    }
   };
 
   const fetchReviews = async () => {
@@ -131,7 +127,6 @@ function Share() {
     return `${names[0]} ${names[1].charAt(0).toUpperCase()}.`;
   };
 
-  // Memoizzare le card per prevenire rerendering non necessario
   const renderedSquares = useMemo(() => {
     if (loading) {
       return [...Array(12)].map((_, i) => (
@@ -212,7 +207,6 @@ function Share() {
     </div>
   ));
 
-  // Memorizza le righe animate per prevenire ri-rendering
   const memoizedRows = useMemo(() => {
     return (
       <div className="animated-squares">

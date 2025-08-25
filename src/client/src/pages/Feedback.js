@@ -14,7 +14,8 @@ import {
   where,
   getDocs,
   orderBy,
-  limit
+  limit,
+  onSnapshot
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import {
@@ -53,12 +54,22 @@ function Feedback() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let unsubscribeUser = null;
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const nameFromEmail = user.email.split('@')[0];
         setUserName(nameFromEmail);
         setUserId(user.uid);
         setUserPhoto(user.photoURL || "");
+        // Listener realtime sulle coin
+        unsubscribeUser = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setUserCoins(userData.coins || 0);
+            setFeedbackCountThisMonth(userData.feedbackCountThisMonth || 0);
+            setLastFeedbackDate(userData.lastFeedbackDate ? userData.lastFeedbackDate.toDate() : null);
+          }
+        });
         await loadUserData(user.uid);
         await checkLastFeedback(user.uid);
       } else {
@@ -69,7 +80,10 @@ function Feedback() {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      if (unsubscribeUser) unsubscribeUser();
+    };
   }, [navigate]);
 
   // Aggiungi useEffect per gestire il click outside del dropdown
@@ -329,7 +343,6 @@ function Feedback() {
         createdAt: serverTimestamp()
       });
 
-      const now = new Date();
       const newCoins = userCoins + 1;
       const newFeedbackCount = feedbackCountThisMonth + 1;
 
@@ -338,10 +351,6 @@ function Feedback() {
         lastFeedbackDate: serverTimestamp(),
         feedbackCountThisMonth: newFeedbackCount
       });
-
-      setUserCoins(newCoins);
-      setFeedbackCountThisMonth(newFeedbackCount);
-      setLastFeedbackDate(now);
 
       showNotification('success', `Grazie per il tuo Feedback!`, true);
 

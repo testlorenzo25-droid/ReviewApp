@@ -2,14 +2,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, onSnapshot, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import {
   faArrowRightFromBracket,
   faFileLines,
   faCircleQuestion,
   faComment,
-  faTrophy 
+  faTrophy
 } from '@fortawesome/free-solid-svg-icons';
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -45,13 +45,20 @@ function Wheel() {
   ];
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    let unsubscribeUser = null;
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
         const nameFromEmail = user.email.split('@')[0];
         setUserName(nameFromEmail);
         setUserId(user.uid);
         setUserPhoto(user.photoURL || "");
-        await loadUserData(user.uid);
+        unsubscribeUser = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+          if (docSnap.exists()) {
+            const userData = docSnap.data();
+            setUserCoins(userData.coins || 0);
+            setCanSpin((userData.coins || 0) >= 1);
+          }
+        });
       } else {
         const hasToken = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
         if (!hasToken) {
@@ -60,7 +67,10 @@ function Wheel() {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeUser) unsubscribeUser();
+    };
   }, [navigate]);
 
   useEffect(() => {
@@ -76,19 +86,6 @@ function Wheel() {
     };
   }, []);
 
-  const loadUserData = async (uid) => {
-    try {
-      const userDoc = await getDoc(doc(db, "users", uid));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        setUserCoins(userData.coins || 0);
-        setCanSpin((userData.coins || 0) >= 1);
-      }
-    } catch (error) {
-      console.error("Errore nel caricamento dati utente:", error);
-    }
-  };
-
   const handleLogout = async () => {
     try {
       await auth.signOut();
@@ -100,32 +97,23 @@ function Wheel() {
     }
   };
 
-  const spinWheel = () => {
+  const spinWheel = async () => {
     if (spinning || !canSpin) return;
 
     setSpinning(true);
 
-    // Calcola un angolo casuale per la sezione vincente
     const winningSectionIndex = Math.floor(Math.random() * wheelSections.length);
     const sectionAngle = 360 / wheelSections.length;
-    
-    // Aggiunge più rotazioni per un effetto più realistico (da 5 a 7 giri completi)
     const fullRotations = 5 + Math.floor(Math.random() * 3);
     const baseDegrees = fullRotations * 360;
-    
-    // Calcola l'angolo finale per fermarsi al centro della sezione vincente
     const finalAngle = baseDegrees + (winningSectionIndex * sectionAngle) + (sectionAngle / 2);
-    
-    // Reset della rotazione prima di iniziare una nuova animazione
+
     if (wheelRef.current) {
       wheelRef.current.style.transition = 'none';
       wheelRef.current.style.transform = 'rotate(0deg)';
-      
-      // Forza un reflow per assicurarsi che il reset venga applicato
       void wheelRef.current.offsetWidth;
     }
 
-    // Applica la rotazione
     setTimeout(() => {
       if (wheelRef.current) {
         wheelRef.current.style.transition = 'transform 4s cubic-bezier(0.3, 0.1, 0.1, 1)';
@@ -134,29 +122,36 @@ function Wheel() {
 
       setTimeout(async () => {
         try {
-          const newCoins = userCoins - 1;
-          setUserCoins(newCoins);
+          const userDocRef = doc(db, "users", userId);
+          const userDocSnap = await getDoc(userDocRef);
+          let currentCoins = userCoins;
+          if (userDocSnap.exists()) {
+            currentCoins = userDocSnap.data().coins || 0;
+          }
 
-          await updateDoc(doc(db, "users", userId), {
-            coins: newCoins
-          });
+          if (currentCoins < 1) {
+            setNotification({
+              visible: true,
+              message: "Non hai abbastanza coin!",
+              isWinner: false
+            });
+            setSpinning(false);
+            return;
+          }
+
+          const newCoins = currentCoins - 1;
+          await updateDoc(userDocRef, { coins: newCoins });
 
           const isWinner = wheelSections[winningSectionIndex].winner;
           let finalCoins = newCoins;
           let message = "C’eri quasi! Ritenta per vincere!";
 
           if (isWinner) {
-            const prizeAmount = 10; // Aumentato il premio per renderlo più interessante
+            const prizeAmount = 10;
             finalCoins = newCoins + prizeAmount;
             message = `Congratulazioni! Hai vinto ${prizeAmount} coin!`;
-
-            await updateDoc(doc(db, "users", userId), {
-              coins: finalCoins
-            });
+            await updateDoc(userDocRef, { coins: finalCoins });
           }
-
-          setUserCoins(finalCoins);
-          setCanSpin(finalCoins >= 1);
 
           setNotification({
             visible: true,
